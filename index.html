@@ -811,6 +811,62 @@ function getWeekLabel(d){ d=d||new Date(); var o=new Date(d.getFullYear(),0,1);
 
 /* ============ STORAGE ============ */
 var SUB_KEY="masterpak_submissions", AUD_KEY="masterpak_audits", PIN_KEY="masterpak_pin", STATIONS_KEY="masterpak_stations";
+
+/* Pull latest submissions + audits from the sheet into the dashboard */
+function refreshFromSheet(){
+  if(!SHEET_URL) return;
+  fetchFromSheet("submission", function(subs){
+    if(subs){ state.submissions = subs; save(SUB_KEY, subs); if(state.view==="dashboard") render(); }
+  });
+  fetchFromSheet("audit", function(auds){
+    if(auds){ state.audits = auds; save(AUD_KEY, auds); if(state.view==="dashboard") render(); }
+  });
+}
+
+/* ===== Google Sheets sync ===== */
+var SHEET_URL = "https://script.google.com/macros/s/AKfycbwVCK2k0ZXPq0IEvonBGPcKAaX0yCuGXWP5K2SEpGswhaSOJCETfyGnEFBAqlzdEdTaWA/exec";
+
+/* Send one record to the sheet (fire-and-forget; no-cors so it always posts) */
+function syncToSheet(type, entry){
+  if(!SHEET_URL) return;
+  try{
+    var payload = Object.assign({ type:type }, entry);
+    fetch(SHEET_URL, {
+      method:"POST",
+      mode:"no-cors",
+      headers:{ "Content-Type":"text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    }).catch(function(){});
+  }catch(e){}
+}
+
+/* Read all records of a type from the sheet via JSONP (avoids CORS on reads) */
+var _jsonpId = 0;
+function fetchFromSheet(type, cb){
+  if(!SHEET_URL){ cb(null); return; }
+  var cbName = "__mp_cb_" + (_jsonpId++);
+  var done = false;
+  var script = document.createElement("script");
+  var timer = setTimeout(function(){ if(!done){ cleanup(); cb(null); } }, 10000);
+  function cleanup(){ done=true; clearTimeout(timer); try{ delete window[cbName]; }catch(e){ window[cbName]=undefined; } if(script.parentNode) script.parentNode.removeChild(script); }
+  window[cbName] = function(res){
+    cleanup();
+    if(!res || !res.ok){ cb(null); return; }
+    var rows = res.data || [];
+    var mapped = rows.map(function(r){
+      var base = { id:r.id, stationId:r.stationId, stationName:r.stationName,
+        answers:r.answers||{}, notes:r.notes||{}, timestamp:r.timestamp };
+      if(type==="audit"){ base.auditor=r.who; base.week=r.when; }
+      else { base.worker=r.who; base.shift=r.when; }
+      return base;
+    });
+    mapped.sort(function(a,b){ return new Date(b.timestamp)-new Date(a.timestamp); });
+    cb(mapped);
+  };
+  script.onerror = function(){ cleanup(); cb(null); };
+  script.src = SHEET_URL + "?action=read&type=" + encodeURIComponent(type) + "&callback=" + cbName;
+  document.body.appendChild(script);
+}
 function load(k){ try{ var v=localStorage.getItem(k); return v?JSON.parse(v):[]; }catch(e){ return []; } }
 function save(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
 function getPin(){ try{ var v=localStorage.getItem(PIN_KEY); return v?JSON.parse(v):DEFAULT_PIN; }catch(e){ return DEFAULT_PIN; } }
@@ -853,8 +909,8 @@ var state = { view:"home", station:null, submissions:[], audits:[], dashTab:"che
 
 function setView(v, extra){ state.view=v; if(extra) for(var k in extra) state[k]=extra[k]; render(); window.scrollTo(0,0); }
 
-function addSubmission(entry){ state.submissions.unshift(entry); save(SUB_KEY, state.submissions); }
-function addAudit(entry){ state.audits.unshift(entry); save(AUD_KEY, state.audits); }
+function addSubmission(entry){ state.submissions.unshift(entry); save(SUB_KEY, state.submissions); syncToSheet("submission", entry); }
+function addAudit(entry){ state.audits.unshift(entry); save(AUD_KEY, state.audits); syncToSheet("audit", entry); }
 
 function esc(s){ return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
 
@@ -1442,7 +1498,7 @@ function handleAct(act, el){
       if(!all) break;
       addSubmission({id:Date.now()+"-"+Math.random().toString(36).slice(2,8),stationId:s.id,stationName:s.name,stationType:s.type,worker:cl.worker,shift:cl.shift,answers:cl.answers,notes:cl.notes,timestamp:new Date().toISOString()});
       cl.step="done"; render(); break; }
-    case "openDashboard": state.filterStation="all"; state.dashTab="checklists"; state.selectedOp=null; setView("dashboard"); break;
+    case "openDashboard": state.filterStation="all"; state.dashTab="checklists"; state.selectedOp=null; setView("dashboard"); refreshFromSheet(); break;
     case "openAuditPicker": setView("auditPicker"); break;
     case "openAuditFlow": startAudit(STATIONS.filter(function(s){return s.id===el.getAttribute("data-id");})[0]); break;
     case "auditAnswer": { var i2=+el.getAttribute("data-idx"); var v2=el.getAttribute("data-val")==="1"; au.answers[WEEKLY_AUDIT_ITEMS[i2].key]=v2; render(); break; }
