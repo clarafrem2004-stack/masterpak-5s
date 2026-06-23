@@ -8,7 +8,1532 @@
   :root { color-scheme: light; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { background: #F1EFEA; }
+  body {<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Masterpak 5S — Operator Portal</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #F1EFEA; }
   body {
+    font-family: 'Inter','Segoe UI','Helvetica Neue',Arial,sans-serif;
+    color: #23282E; -webkit-font-smoothing: antialiased;
+  }
+  #app { min-height: 100vh; }
+  .mono { font-family: 'JetBrains Mono','SF Mono','Consolas','Courier New',monospace; }
+  .shell { max-width: 480px; margin: 0 auto; padding: 0 1rem; }
+  .shell-wide { max-width: 640px; margin: 0 auto; padding: 0 1rem; }
+  .band { height: 4px; background: #1F3A5F; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; }
+  button:focus-visible, input:focus-visible { outline: 2px solid #1F3A5F; outline-offset: 2px; }
+  input { font-family: inherit; }
+  input::placeholder { color: #8C9098; }
+  .card { background: #FBFAF7; border: 1px solid #DAD5CC; border-radius: 8px; }
+  .row-btn { width:100%; display:flex; align-items:center; gap:13px; padding:0.8rem 1rem; border:1px solid #DAD5CC; border-radius:6px; background:#FBFAF7; text-align:left; }
+  .row-btn:hover { background:#F4F1EB; }
+  h1 { font-family:'Archivo','Arial Narrow',sans-serif; font-weight:800; font-size:22px; letter-spacing:0.01em; text-transform:uppercase; }
+  h2 { font-family:'Archivo','Arial Narrow',sans-serif; font-weight:700; font-size:19px; }
+  .icon { display:inline-flex; vertical-align:middle; }
+  .fade { animation: fade 0.18s ease; }
+  @keyframes fade { from { opacity:0; transform: translateY(4px);} to {opacity:1; transform:none;} }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+"use strict";
+/* ============ THEME ============ */
+var T = {
+  bg:"#F1EFEA", bgRaised:"#FBFAF7", bgCard:"#FBFAF7", line:"#DAD5CC", lineStrong:"#BCB5A8",
+  text:"#23282E", textDim:"#5A6068", textFaint:"#8C9098", accent:"#1F3A5F",
+  green:"#2E6B4F", greenBg:"#E5EFE9", red:"#9E3030", redBg:"#F4E6E4",
+};
+
+/* Starting Manager PIN. After first run, the PIN can be changed inside the app
+   (Manager Area → gear icon) and is then saved on the device. */
+var DEFAULT_PIN = "1234";
+var LOGO_SRC = "data:image/png;base64,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";
+
+/* ============ DATA ============ */
+const DEFAULT_STATIONS = [
+  {
+    id: "M-01",
+    name: "Agriline",
+    type: "machine",
+    jobs: [
+      { name: "Maguire Platform", frequency: "Day Shift" },
+      { name: "Extruders Areas", frequency: "Day Shift" },
+      { name: "Die Platform", frequency: "Day Shift" },
+      { name: "Material Area", frequency: "Day Shift" },
+      { name: "Machine Platforms", frequency: "Weekly Morning" },
+      { name: "Niproll Area", frequency: "Day Shift" },
+      { name: "Winder Area", frequency: "Day Shift" },
+      { name: "Organize PPE Tools", frequency: "Day Shift" },
+      { name: "Electrical Panels", frequency: "Weekly Morning" },
+      { name: "Operator Desk", frequency: "Day Shift" },
+      { name: "Maguire Filters", frequency: "Day Shift" },
+      { name: "Winder Shinning", frequency: "Monthly" },
+      { name: "Basket from dust", frequency: "Upon stoppage" },
+      { name: "Rollers from dust", frequency: "Upon stoppage" },
+      { name: "IBC pipe and air ring from oil", frequency: "Upon stoppage" },
+      { name: "Inside cable trays from raw materials", frequency: "Upon stoppage" },
+      { name: "Structure Fans", frequency: "Monthly" }
+    ]
+  },
+  {
+    id: "M-02",
+    name: "WH 90",
+    type: "machine",
+    jobs: [
+      { name: "Maguire Platform", frequency: "Day Shift" },
+      { name: "Extruders Areas", frequency: "Day Shift" },
+      { name: "Die Platform", frequency: "Day Shift" },
+      { name: "Material Area", frequency: "Day Shift" },
+      { name: "Machine Platforms", frequency: "Weekly Morning" },
+      { name: "Niproll Area", frequency: "Day Shift" },
+      { name: "Winder Area", frequency: "Day Shift" },
+      { name: "Organize PPE Tools", frequency: "Day Shift" },
+      { name: "Electrical Panels", frequency: "Weekly Morning" },
+      { name: "Operator Desk", frequency: "Day Shift" },
+      { name: "Maguire Filters", frequency: "Day Shift" },
+      { name: "Winder Shinning", frequency: "Monthly" },
+      { name: "Basket from dust", frequency: "Upon stoppage" },
+      { name: "Rollers from dust", frequency: "Upon stoppage" },
+      { name: "IBC pipe and air ring from oil", frequency: "Upon stoppage" },
+      { name: "Inside cable trays from raw materials", frequency: "Upon stoppage" },
+      { name: "Structure Fans", frequency: "Monthly" }
+    ]
+  },
+  {
+    id: "M-03",
+    name: "Demag 75",
+    type: "machine",
+    jobs: [
+      { name: "Maguire Platform", frequency: "Day Shift" },
+      { name: "Extruders Areas", frequency: "Day Shift" },
+      { name: "Die Platform", frequency: "Day Shift" },
+      { name: "Material Area", frequency: "Day Shift" },
+      { name: "Machine Platforms", frequency: "Weekly Morning" },
+      { name: "Niproll Area", frequency: "Day Shift" },
+      { name: "Winder Area", frequency: "Day Shift" },
+      { name: "Organize PPE Tools", frequency: "Day Shift" },
+      { name: "Electrical Panels", frequency: "Weekly Morning" },
+      { name: "Operator Desk", frequency: "Day Shift" },
+      { name: "Maguire Filters", frequency: "Day Shift" },
+      { name: "Winder Shinning", frequency: "Monthly" },
+      { name: "Structure Fans", frequency: "Monthly" }
+    ]
+  },
+  {
+    id: "M-04",
+    name: "IBC - FAS 2",
+    type: "machine",
+    jobs: [
+      { name: "Maguire Platform", frequency: "Day Shift" },
+      { name: "Extruders Areas", frequency: "Day Shift" },
+      { name: "Die Platform", frequency: "Day Shift" },
+      { name: "Material Area", frequency: "Day Shift" },
+      { name: "Niproll Area", frequency: "Day Shift" },
+      { name: "FAS Area", frequency: "Day Shift" },
+      { name: "Organize PPE Tools", frequency: "Day Shift" },
+      { name: "Electrical Panels", frequency: "Weekly Morning" },
+      { name: "Operator Desk", frequency: "Day Shift" },
+      { name: "Maguire Filters", frequency: "Day Shift" },
+      { name: "Winder Shinning", frequency: "Monthly" },
+      { name: "Basket from dust", frequency: "Upon stoppage" },
+      { name: "Rollers from dust", frequency: "Upon stoppage" },
+      { name: "IBC pipe and air ring from oil", frequency: "Upon stoppage" },
+      { name: "Inside cable trays from raw materials", frequency: "Upon stoppage" },
+      { name: "Sealing and perforation bars", frequency: "Upon stoppage" }
+    ]
+  },
+  {
+    id: "M-05",
+    name: "WELLEX - FAS 1",
+    type: "machine",
+    jobs: [
+      { name: "Maguire Platform", frequency: "Day Shift" },
+      { name: "Extruders Areas", frequency: "Day Shift" },
+      { name: "Die Platform", frequency: "Day Shift" },
+      { name: "Material Area", frequency: "Day Shift" },
+      { name: "Niproll Area", frequency: "Day Shift" },
+      { name: "FAS Area", frequency: "Day Shift" },
+      { name: "Organize PPE Tools", frequency: "Day Shift" },
+      { name: "Electrical Panels", frequency: "Weekly Morning" },
+      { name: "Operator Desk", frequency: "Day Shift" },
+      { name: "Maguire Filters", frequency: "Day Shift" },
+      { name: "Winder Shinning", frequency: "Monthly" },
+      { name: "Basket from dust", frequency: "Upon stoppage" },
+      { name: "Rollers from dust", frequency: "Upon stoppage" },
+      { name: "IBC pipe and air ring from oil", frequency: "Upon stoppage" },
+      { name: "Inside cable trays from raw materials", frequency: "Upon stoppage" },
+      { name: "Sealing and perforation bars", frequency: "Upon stoppage" },
+      { name: "Structure Fans", frequency: "Monthly" }
+    ]
+  },
+  {
+    id: "M-06",
+    name: "CMG",
+    type: "machine",
+    jobs: [
+      { name: "Maguire Platform", frequency: "Day Shift" },
+      { name: "Extruders Areas", frequency: "Day Shift" },
+      { name: "Die Platform", frequency: "Day Shift" },
+      { name: "Material Area", frequency: "Day Shift" },
+      { name: "Machine Platforms", frequency: "Weekly Morning" },
+      { name: "Niproll Area", frequency: "Day Shift" },
+      { name: "Winder Area", frequency: "Day Shift" },
+      { name: "Organize PPE Tools", frequency: "Day Shift" },
+      { name: "Electrical Panels", frequency: "Weekly Morning" },
+      { name: "Operator Desk", frequency: "Day Shift" },
+      { name: "Maguire Filters", frequency: "Day Shift" },
+      { name: "Winder Shinning", frequency: "Monthly" },
+      { name: "Basket from dust", frequency: "Upon stoppage" },
+      { name: "Rollers from dust", frequency: "Upon stoppage" },
+      { name: "IBC pipe and air ring from oil", frequency: "Upon stoppage" },
+      { name: "Inside cable trays from raw materials", frequency: "Upon stoppage" },
+      { name: "Structure Fans", frequency: "Monthly" }
+    ]
+  },
+  {
+    id: "M-07",
+    name: "Dolci 70",
+    type: "machine",
+    jobs: [
+      { name: "Maguire Platform", frequency: "Day Shift" },
+      { name: "Extruders Areas", frequency: "Day Shift" },
+      { name: "Die Platform", frequency: "Day Shift" },
+      { name: "Material Area", frequency: "Day Shift" },
+      { name: "Niproll Area", frequency: "Day Shift" },
+      { name: "FAS Area", frequency: "Day Shift" },
+      { name: "Organize PPE Tools", frequency: "Day Shift" },
+      { name: "Electrical Panels", frequency: "Weekly Morning" },
+      { name: "Operator Desk", frequency: "Day Shift" },
+      { name: "Maguire Filters", frequency: "Day Shift" },
+      { name: "Winder Shinning", frequency: "Monthly" },
+      { name: "Basket from dust", frequency: "Upon stoppage" },
+      { name: "Rollers from dust", frequency: "Upon stoppage" },
+      { name: "IBC pipe and air ring from oil", frequency: "Upon stoppage" },
+      { name: "Inside cable trays from raw materials", frequency: "Upon stoppage" },
+      { name: "Sealing and perforation bars", frequency: "Upon stoppage" },
+      { name: "Structure Fans", frequency: "Monthly" }
+    ]
+  },
+  {
+    id: "M-08",
+    name: "Tecnova - FAS 4",
+    type: "machine",
+    jobs: [
+      { name: "Maguire Platform", frequency: "Day Shift" },
+      { name: "Extruders Areas", frequency: "Day Shift" },
+      { name: "Die Platform", frequency: "Day Shift" },
+      { name: "Material Area", frequency: "Day Shift" },
+      { name: "Niproll Area", frequency: "Day Shift" },
+      { name: "FAS Area", frequency: "Day Shift" },
+      { name: "Organize PPE Tools", frequency: "Day Shift" },
+      { name: "Electrical Panels", frequency: "Weekly Morning" },
+      { name: "Operator Desk", frequency: "Day Shift" },
+      { name: "Maguire Filters", frequency: "Day Shift" },
+      { name: "Winder Shinning", frequency: "Monthly" },
+      { name: "Basket from dust", frequency: "Upon stoppage" },
+      { name: "Rollers from dust", frequency: "Upon stoppage" },
+      { name: "IBC pipe and air ring from oil", frequency: "Upon stoppage" },
+      { name: "Inside cable trays from raw materials", frequency: "Upon stoppage" },
+      { name: "Sealing and perforation bars", frequency: "Upon stoppage" },
+      { name: "Structure Fans", frequency: "Monthly" }
+    ]
+  },
+  {
+    id: "M-09",
+    name: "DOLCI 350",
+    type: "machine",
+    jobs: [
+      { name: "Innoplast Platform", frequency: "Day Shift" },
+      { name: "Extruders Areas", frequency: "Day Shift" },
+      { name: "Die Platform", frequency: "Day Shift" },
+      { name: "Material Area", frequency: "Day Shift" },
+      { name: "Machine Platforms", frequency: "Weekly Morning" },
+      { name: "Niproll Area", frequency: "Day Shift" },
+      { name: "Winder Area", frequency: "Day Shift" },
+      { name: "Organize PPE Tools", frequency: "Day Shift" },
+      { name: "Electrical Panels", frequency: "Weekly Morning" },
+      { name: "Operator Desk", frequency: "Day Shift" },
+      { name: "Maguire Filters", frequency: "Day Shift" },
+      { name: "Winder Shinning", frequency: "Monthly" },
+      { name: "Basket from dust", frequency: "Upon stoppage" },
+      { name: "Rollers from dust", frequency: "Upon stoppage" },
+      { name: "IBC pipe and air ring from oil", frequency: "Upon stoppage" },
+      { name: "Inside cable trays from raw materials", frequency: "Upon stoppage" },
+      { name: "Structure Fans", frequency: "Monthly" }
+    ]
+  },
+  {
+    id: "M-10",
+    name: "MACCHI",
+    type: "machine",
+    jobs: [
+      { name: "Maguire Platform", frequency: "Day Shift" },
+      { name: "Extruders Areas", frequency: "Day Shift" },
+      { name: "Die Platform", frequency: "Day Shift" },
+      { name: "Material Area", frequency: "Day Shift" },
+      { name: "Machine Platforms", frequency: "Weekly Morning" },
+      { name: "Niproll Area", frequency: "Day Shift" },
+      { name: "Winder Area", frequency: "Day Shift" },
+      { name: "Organize PPE Tools", frequency: "Day Shift" },
+      { name: "Electrical Panels", frequency: "Weekly Morning" },
+      { name: "Operator Desk", frequency: "Day Shift" },
+      { name: "Maguire Filters", frequency: "Day Shift" },
+      { name: "Winder Shinning", frequency: "Monthly" },
+      { name: "Basket from dust", frequency: "Upon stoppage" },
+      { name: "Rollers from dust", frequency: "Upon stoppage" },
+      { name: "IBC pipe and air ring from oil", frequency: "Upon stoppage" },
+      { name: "Inside cable trays from raw materials", frequency: "Upon stoppage" },
+      { name: "Structure Fans", frequency: "Monthly" }
+    ]
+  },
+  {
+    id: "M-11",
+    name: "KIEFEL",
+    type: "machine",
+    jobs: [
+      { name: "Innoplast Platform", frequency: "Day Shift" },
+      { name: "Extruders Areas", frequency: "Day Shift" },
+      { name: "Die Platform", frequency: "Day Shift" },
+      { name: "Material Area", frequency: "Day Shift" },
+      { name: "Machine Platforms", frequency: "Weekly Morning" },
+      { name: "Niproll Area", frequency: "Day Shift" },
+      { name: "Winder Area", frequency: "Day Shift" },
+      { name: "Organize PPE Tools", frequency: "Day Shift" },
+      { name: "Electrical Panels", frequency: "Weekly Morning" },
+      { name: "Operator Desk", frequency: "Day Shift" },
+      { name: "Maguire Filters", frequency: "Day Shift" },
+      { name: "Winder Shinning", frequency: "Monthly" },
+      { name: "Basket from dust", frequency: "Upon stoppage" },
+      { name: "Rollers from dust", frequency: "Upon stoppage" },
+      { name: "IBC pipe and air ring from oil", frequency: "Upon stoppage" },
+      { name: "Inside cable trays from raw materials", frequency: "Upon stoppage" },
+      { name: "Structure Fans", frequency: "Monthly" }
+    ]
+  },
+  {
+    id: "M-12",
+    name: "COEX 175",
+    type: "machine",
+    jobs: [
+      { name: "Innoplast Platform", frequency: "Day Shift" },
+      { name: "Extruders Areas", frequency: "Day Shift" },
+      { name: "Die Platform", frequency: "Day Shift" },
+      { name: "Material Area", frequency: "Day Shift" },
+      { name: "Machine Platforms", frequency: "Weekly Morning" },
+      { name: "Niproll Area", frequency: "Day Shift" },
+      { name: "Winder Area", frequency: "Day Shift" },
+      { name: "Organize PPE Tools", frequency: "Day Shift" },
+      { name: "Electrical Panels", frequency: "Weekly Morning" },
+      { name: "Operator Desk", frequency: "Day Shift" },
+      { name: "Maguire Filters", frequency: "Day Shift" },
+      { name: "Winder Shinning", frequency: "Monthly" },
+      { name: "Basket from dust", frequency: "Upon stoppage" },
+      { name: "Rollers from dust", frequency: "Upon stoppage" },
+      { name: "IBC pipe and air ring from oil", frequency: "Upon stoppage" },
+      { name: "Inside cable trays from raw materials", frequency: "Upon stoppage" },
+      { name: "Structure Fans", frequency: "Monthly" }
+    ]
+  },
+  {
+    id: "M-13",
+    name: "VENUS FAS 1",
+    type: "machine",
+    jobs: [
+      { name: "Hooper Platform", frequency: "As needed" },
+      { name: "Extruders Areas", frequency: "As needed" },
+      { name: "Die Platform", frequency: "As needed" },
+      { name: "Material Area", frequency: "As needed" },
+      { name: "Niproll Area", frequency: "As needed" },
+      { name: "Winder Area", frequency: "As needed" },
+      { name: "Organize PPE Tools", frequency: "As needed" },
+      { name: "Electrical Panels", frequency: "As needed" },
+      { name: "Operator Desk", frequency: "As needed" },
+      { name: "Maguire Filters", frequency: "As needed" },
+      { name: "Winder Shinning", frequency: "Monthly" },
+      { name: "Basket from dust", frequency: "As needed" },
+      { name: "Rollers from dust", frequency: "As needed" },
+      { name: "IBC pipe and air ring from oil", frequency: "As needed" },
+      { name: "Inside cable trays from raw materials", frequency: "As needed" },
+      { name: "Sealing and perforation bars", frequency: "As needed" },
+      { name: "Structure Fans", frequency: "Monthly" }
+    ]
+  },
+  {
+    id: "M-14",
+    name: "NEXTROM",
+    type: "machine",
+    jobs: [
+      { name: "Maguire Platform", frequency: "As needed" },
+      { name: "Extruders Areas", frequency: "As needed" },
+      { name: "Die Platform", frequency: "As needed" },
+      { name: "Material Area", frequency: "As needed" },
+      { name: "Machine Platforms", frequency: "As needed" },
+      { name: "Niproll Area", frequency: "As needed" },
+      { name: "Winder Area", frequency: "As needed" },
+      { name: "Organize PPE Tools", frequency: "As needed" },
+      { name: "Electrical Panels", frequency: "As needed" },
+      { name: "Operator Desk", frequency: "As needed" },
+      { name: "Maguire Filters", frequency: "As needed" },
+      { name: "Winder Shinning", frequency: "Monthly" },
+      { name: "Basket from dust", frequency: "As needed" },
+      { name: "Rollers from dust", frequency: "As needed" },
+      { name: "Inside cable trays from raw materials", frequency: "As needed" },
+      { name: "Structure Fans", frequency: "Monthly" }
+    ]
+  },
+  {
+    id: "M-15",
+    name: "Bimec",
+    type: "machine",
+    jobs: [
+      { name: "Organize mc tool box", frequency: "Daily (mornings)" },
+      { name: "Clean working place", frequency: "Daily (mornings)" },
+      { name: "Clean Mother roll area", frequency: "Daily (mornings)" },
+      { name: "Clean input Cores / ORM area", frequency: "Daily (mornings)" },
+      { name: "Clean FG area", frequency: "Daily (mornings)" },
+      { name: "Clean machine alleys", frequency: "Daily (mornings)" },
+      { name: "Clean machine body", frequency: "Weekly" },
+      { name: "Clean plaxy covers / Cylinders", frequency: "Weekly" },
+      { name: "Clean trim area", frequency: "Daily (mornings)" },
+      { name: "Clean inside machine", frequency: "Daily (mornings)" }
+    ]
+  },
+  {
+    id: "M-16",
+    name: "I-joan",
+    type: "machine",
+    jobs: [
+      { name: "Organize mc tool box", frequency: "Daily (mornings)" },
+      { name: "Clean working place", frequency: "Daily (mornings)" },
+      { name: "Clean Mother roll area", frequency: "Daily (mornings)" },
+      { name: "Clean input Cores / ORM area", frequency: "Daily (mornings)" },
+      { name: "Clean FG area", frequency: "Daily (mornings)" },
+      { name: "Clean machine alleys", frequency: "Daily (mornings)" },
+      { name: "Clean machine body", frequency: "Weekly" },
+      { name: "Clean plaxy covers / Cylinders", frequency: "Weekly" },
+      { name: "Clean trim area", frequency: "Daily (mornings)" },
+      { name: "Clean inside machine", frequency: "Daily (mornings)" }
+    ]
+  },
+  {
+    id: "M-17",
+    name: "Choving",
+    type: "machine",
+    jobs: [
+      { name: "Organize mc tool box", frequency: "Daily (mornings)" },
+      { name: "Clean working place", frequency: "Daily (mornings)" },
+      { name: "Clean Mother roll area", frequency: "Daily (mornings)" },
+      { name: "Clean input Cores / ORM area", frequency: "Daily (mornings)" },
+      { name: "Clean FG area", frequency: "Daily (mornings)" },
+      { name: "Clean machine alleys", frequency: "Daily (mornings)" },
+      { name: "Clean machine body", frequency: "Weekly" },
+      { name: "Clean plaxy covers / Cylinders", frequency: "Weekly" },
+      { name: "Clean inside machine", frequency: "Daily (mornings)" }
+    ]
+  },
+  {
+    id: "M-18",
+    name: "ARVOR",
+    type: "machine",
+    jobs: [
+      { name: "Organize mc tool box", frequency: "Daily (mornings)" },
+      { name: "Clean working place", frequency: "Daily (mornings)" },
+      { name: "Clean Mother roll area", frequency: "Daily (mornings)" },
+      { name: "Clean input Cores / ORM area", frequency: "Daily (mornings)" },
+      { name: "Clean FG area", frequency: "Daily (mornings)" },
+      { name: "Clean machine alleys", frequency: "Daily (mornings)" },
+      { name: "Clean machine body", frequency: "Weekly" },
+      { name: "Clean plaxy covers / Cylinders", frequency: "Weekly" },
+      { name: "Clean inside machine", frequency: "Daily (mornings)" }
+    ]
+  },
+  {
+    id: "M-19",
+    name: "Lemo 4",
+    type: "machine",
+    jobs: [
+      { name: "Organize mc tool box", frequency: "Daily (mornings)" },
+      { name: "Clean working place", frequency: "Daily (mornings)" },
+      { name: "Clean Mother roll area", frequency: "Daily (mornings)" },
+      { name: "Clean input Cores / ORM area", frequency: "Daily (mornings)" },
+      { name: "Clean FG area", frequency: "Daily (mornings)" },
+      { name: "Clean machine alleys", frequency: "Daily (mornings)" },
+      { name: "Clean machine body", frequency: "Weekly" },
+      { name: "Clean plaxy covers / Cylinders", frequency: "Weekly" },
+      { name: "Clean punch area", frequency: "Daily (mornings)" },
+      { name: "Clean inside machine", frequency: "Daily (mornings)" }
+    ]
+  },
+  {
+    id: "M-20",
+    name: "ARTOMATIC",
+    type: "machine",
+    jobs: [
+      { name: "Organize mc tool box", frequency: "Daily (mornings)" },
+      { name: "Clean working place", frequency: "Daily (mornings)" },
+      { name: "Clean Mother roll area", frequency: "Daily (mornings)" },
+      { name: "Clean input Cores / ORM area", frequency: "Daily (mornings)" },
+      { name: "Clean FG area", frequency: "Daily (mornings)" },
+      { name: "Clean machine alleys", frequency: "Daily (mornings)" },
+      { name: "Clean machine body", frequency: "Weekly" },
+      { name: "Clean plaxy covers / Cylinders", frequency: "Weekly" },
+      { name: "Clean inside machine", frequency: "Daily (mornings)" }
+    ]
+  },
+  {
+    id: "M-21",
+    name: "Maklaus 1",
+    type: "machine",
+    jobs: [
+      { name: "Organize mc tool box", frequency: "Daily (mornings)" },
+      { name: "Clean working place", frequency: "Daily (mornings)" },
+      { name: "Clean Mother roll area", frequency: "Daily (mornings)" },
+      { name: "Clean input Cores / ORM area", frequency: "Daily (mornings)" },
+      { name: "Clean FG area", frequency: "Daily (mornings)" },
+      { name: "Clean machine alleys", frequency: "Daily (mornings)" },
+      { name: "Clean machine body", frequency: "Weekly" },
+      { name: "Clean inside machine", frequency: "Daily (mornings)" }
+    ]
+  },
+  {
+    id: "M-22",
+    name: "Maklaus 2",
+    type: "machine",
+    jobs: [
+      { name: "Organize mc tool box", frequency: "Daily (mornings)" },
+      { name: "Clean working place", frequency: "Daily (mornings)" },
+      { name: "Clean Mother roll area", frequency: "Daily (mornings)" },
+      { name: "Clean input Cores / ORM area", frequency: "Daily (mornings)" },
+      { name: "Clean FG area", frequency: "Daily (mornings)" },
+      { name: "Clean machine alleys", frequency: "Daily (mornings)" },
+      { name: "Clean machine body", frequency: "Weekly" },
+      { name: "Clean inside machine", frequency: "Daily (mornings)" }
+    ]
+  },
+  {
+    id: "M-23",
+    name: "Mamata",
+    type: "machine",
+    jobs: [
+      { name: "Organize mc tool box", frequency: "Daily (mornings)" },
+      { name: "Clean working place", frequency: "Daily (mornings)" },
+      { name: "Clean Mother roll area", frequency: "Daily (mornings)" },
+      { name: "Clean input Cores / ORM area", frequency: "Daily (mornings)" },
+      { name: "Clean FG area", frequency: "Daily (mornings)" },
+      { name: "Clean machine alleys", frequency: "Daily (mornings)" },
+      { name: "Clean machine body", frequency: "Weekly" },
+      { name: "Clean plaxy covers / Cylinders", frequency: "Weekly" },
+      { name: "Clean punch area", frequency: "Daily (mornings)" },
+      { name: "Clean inside machine", frequency: "Daily (mornings)" },
+      { name: "Patch unit", frequency: "Upon stoppage" },
+      { name: "Clean Trim area", frequency: "Daily (mornings)" }
+    ]
+  },
+  {
+    id: "M-24",
+    name: "Elba 1",
+    type: "machine",
+    jobs: [
+      { name: "Organize mc tool box", frequency: "Daily (mornings)" },
+      { name: "Clean working place", frequency: "Daily (mornings)" },
+      { name: "Clean Mother roll area", frequency: "Daily (mornings)" },
+      { name: "Clean input Cores / ORM area", frequency: "Daily (mornings)" },
+      { name: "Clean FG area", frequency: "Daily (mornings)" },
+      { name: "Clean machine alleys", frequency: "Daily (mornings)" },
+      { name: "Clean machine body", frequency: "Weekly" },
+      { name: "Clean plaxy covers / Cylinders", frequency: "Weekly" },
+      { name: "Clean punch area", frequency: "Daily (mornings)" },
+      { name: "Clean inside machine", frequency: "Daily (mornings)" },
+      { name: "Patch unit", frequency: "Upon stoppage" },
+      { name: "Moulin", frequency: "Upon stoppage" },
+      { name: "Clean Trim area", frequency: "Daily (mornings)" }
+    ]
+  },
+  {
+    id: "M-25",
+    name: "H.S.",
+    type: "machine",
+    jobs: [
+      { name: "Organize mc tool box", frequency: "Daily (mornings)" },
+      { name: "Clean working place", frequency: "Daily (mornings)" },
+      { name: "Clean Mother roll area", frequency: "Daily (mornings)" },
+      { name: "Clean input Cores / ORM area", frequency: "Daily (mornings)" },
+      { name: "Clean FG area", frequency: "Daily (mornings)" },
+      { name: "Clean machine alleys", frequency: "Daily (mornings)" },
+      { name: "Clean machine body", frequency: "Weekly" },
+      { name: "Clean plaxy covers / Cylinders", frequency: "Weekly" },
+      { name: "Clean punch area", frequency: "Daily (mornings)" },
+      { name: "Clean inside machine", frequency: "Daily (mornings)" },
+      { name: "Patch unit", frequency: "Upon stoppage" },
+      { name: "Moulin", frequency: "Upon stoppage" },
+      { name: "Clean Trim area", frequency: "Daily (mornings)" }
+    ]
+  },
+  {
+    id: "M-26",
+    name: "V-Fold",
+    type: "machine",
+    jobs: [
+      { name: "Organize mc tool box", frequency: "Daily (mornings)" },
+      { name: "Clean working place", frequency: "Daily (mornings)" },
+      { name: "Clean Mother roll area", frequency: "Daily (mornings)" },
+      { name: "Clean input Cores / ORM area", frequency: "Daily (mornings)" },
+      { name: "Clean FG area", frequency: "Daily (mornings)" },
+      { name: "Clean machine alleys", frequency: "Daily (mornings)" },
+      { name: "Clean machine body", frequency: "Weekly" },
+      { name: "Clean plaxy covers / Cylinders", frequency: "Weekly" },
+      { name: "Clean inside machine", frequency: "Daily (mornings)" }
+    ]
+  },
+  {
+    id: "M-27",
+    name: "Preparation Section",
+    type: "area",
+    jobs: [
+      { name: "Ensure Labeling for all Areas", frequency: "Weekly" },
+      { name: "Clean Material floor area", frequency: "Daily" },
+      { name: "Clean Section alleys", frequency: "Daily" },
+      { name: "Sort Material Area", frequency: "Daily" },
+      { name: "Clean Blenders Area", frequency: "Daily" },
+      { name: "Sort Blenders Area", frequency: "Weekly" },
+      { name: "Repair blender conditions", frequency: "Weekly" },
+      { name: "Engineering tapes", frequency: "Weekly" },
+      { name: "Clean Material area", frequency: "Daily" }
+    ]
+  },
+  {
+    id: "M-28",
+    name: "Cutter - Press - Wooden",
+    type: "area",
+    jobs: [
+      { name: "Wooden", frequency: "Daily" },
+      { name: "Wooden Tools", frequency: "Daily" },
+      { name: "Press Area", frequency: "Daily" },
+      { name: "Press Shinning", frequency: "Weekly" },
+      { name: "Cutter Area", frequency: "Daily" },
+      { name: "Cutter Shinning", frequency: "Weekly" },
+      { name: "Alleys", frequency: "Daily" },
+      { name: "WIP Area", frequency: "Daily" },
+      { name: "Mother Rolls Area", frequency: "Daily" },
+      { name: "Bin Waste (Cores)", frequency: "Daily" },
+      { name: "Shining", frequency: "Weekly" }
+    ]
+  },
+  {
+    id: "M-29",
+    name: "CORE SECTION",
+    type: "area",
+    jobs: [
+      { name: "Fix Floor Decking", frequency: "Monthly" },
+      { name: "Ensure Labeling for all Items", frequency: "Monthly" },
+      { name: "Organize Mother Roll Area", frequency: "Day Shift" },
+      { name: "Organize FG Area", frequency: "Day Shift" },
+      { name: "Organize WIP Area", frequency: "Day Shift" },
+      { name: "Organize & Clean Waste Area", frequency: "Day Shift" },
+      { name: "Sort & Clean Alleys", frequency: "Day Shift" },
+      { name: "Sort & Clean Sodaltec Area", frequency: "Day Shift" },
+      { name: "Sort & Clean Glue Mixer Area", frequency: "Day Shift" },
+      { name: "Clean Glue Mixer", frequency: "Weekly Morning" },
+      { name: "Clean Oven Area", frequency: "Weekly Morning" },
+      { name: "Organize Tool Box", frequency: "Day Shift" },
+      { name: "Clean Scale Area", frequency: "Day Shift" }
+    ]
+  },
+  {
+    id: "M-30",
+    name: "CARINT CI8",
+    type: "machine",
+    jobs: [
+      { name: "Organize and Clean Mother Roll Area", frequency: "Daily" },
+      { name: "Organize and Clean FG Area", frequency: "Daily" },
+      { name: "Clean Waste Area and Bins", frequency: "Daily" },
+      { name: "Sort and Clean Alleys", frequency: "Daily" },
+      { name: "Sort and Clean Machine Area", frequency: "Daily" },
+      { name: "Organize Tool Box", frequency: "Daily" },
+      { name: "Clean Machine Body", frequency: "Weekly" },
+      { name: "Clean Station", frequency: "Daily" },
+      { name: "Clean Viewer", frequency: "Daily" },
+      { name: "Clean Machine Anilox & Cylinder Trolley", frequency: "Weekly" },
+      { name: "Clean Machine Ink Tank", frequency: "Daily" },
+      { name: "Clean Scale Area", frequency: "Daily" },
+      { name: "Clean Operator Desk", frequency: "Daily" },
+      { name: "Clean PC Stand", frequency: "Daily" },
+      { name: "Dryers", frequency: "Upon stoppage" },
+      { name: "Station guides", frequency: "Upon stoppage" },
+      { name: "Drum", frequency: "Upon stoppage" },
+      { name: "Anilox", frequency: "Upon stoppage" },
+      { name: "Ink tray", frequency: "Upon stoppage" },
+      { name: "Oil over machine body", frequency: "Upon stoppage" }
+    ]
+  },
+  {
+    id: "M-31",
+    name: "COMEXI",
+    type: "machine",
+    jobs: [
+      { name: "Organize and Clean Mother Roll Area", frequency: "Daily" },
+      { name: "Organize and Clean FG Area", frequency: "Daily" },
+      { name: "Clean Waste Area and Bins", frequency: "Daily" },
+      { name: "Sort and Clean Alleys", frequency: "Daily" },
+      { name: "Sort and Clean Machine Area", frequency: "Daily" },
+      { name: "Organize Tool Box", frequency: "Daily" },
+      { name: "Clean Machine Body", frequency: "Weekly" },
+      { name: "Clean Station", frequency: "Daily" },
+      { name: "Clean Viewer", frequency: "Daily" },
+      { name: "Clean Machine Anilox & Cylinder Trolley", frequency: "Weekly" },
+      { name: "Clean Machine Ink Tank", frequency: "Daily" },
+      { name: "Clean Scale Area", frequency: "Daily" },
+      { name: "Clean Operator Desk", frequency: "Daily" },
+      { name: "Clean PC Stand", frequency: "Daily" },
+      { name: "Dryers", frequency: "Upon stoppage" },
+      { name: "Station guides", frequency: "Upon stoppage" },
+      { name: "Drum", frequency: "Upon stoppage" },
+      { name: "Anilox", frequency: "Upon stoppage" },
+      { name: "Ink tray", frequency: "Upon stoppage" },
+      { name: "Oil over machine body", frequency: "Upon stoppage" }
+    ]
+  },
+  {
+    id: "M-32",
+    name: "MOUNTING",
+    type: "area",
+    jobs: [
+      { name: "Clean Mandrel and Sleeve Trolley", frequency: "Daily" },
+      { name: "Organize Sleeve Racks (Inside)", frequency: "Daily" },
+      { name: "Organize Sleeve Racks (Outside 01)", frequency: "Daily" },
+      { name: "Organize Sleeve Racks (Outside 02)", frequency: "Daily" },
+      { name: "Sort and Clean Alleys", frequency: "Daily" },
+      { name: "Sort and Clean Mounting Area", frequency: "Daily" },
+      { name: "Organize Tool Box", frequency: "Daily" },
+      { name: "Clean Machine Body", frequency: "Weekly" },
+      { name: "Clean Machine Viewer", frequency: "Daily" },
+      { name: "Clean Lifter", frequency: "Weekly" },
+      { name: "Sort and Clean Working Table", frequency: "Daily" },
+      { name: "Sort and Clean PC Table", frequency: "Daily" },
+      { name: "Organize and Clean Plate Racks", frequency: "Daily" },
+      { name: "Sorting and Clean Storage Room", frequency: "Weekly" }
+    ]
+  },
+  {
+    id: "M-33",
+    name: "Plant",
+    type: "area",
+    jobs: [
+      { name: "Cafeteria", frequency: "As needed" },
+      { name: "WC Office", frequency: "As needed" },
+      { name: "Clean Alleys with Broom", frequency: "As needed" },
+      { name: "Clean Office Stairs", frequency: "As needed" },
+      { name: "Break Area", frequency: "As needed" },
+      { name: "Clean Alleys with Shower", frequency: "As needed" },
+      { name: "Shinning", frequency: "As needed" }
+    ]
+  },
+  {
+    id: "M-34",
+    name: "W.C. Plant",
+    type: "area",
+    jobs: [
+      { name: "07:00 – 08:00", frequency: "Hourly" },
+      { name: "08:00 – 09:00", frequency: "Hourly" },
+      { name: "09:00 – 10:00", frequency: "Hourly" },
+      { name: "10:00 – 11:00", frequency: "Hourly" },
+      { name: "11:00 – 12:00", frequency: "Hourly" },
+      { name: "12:00 – 13:00", frequency: "Hourly" },
+      { name: "13:00 – 14:00", frequency: "Hourly" },
+      { name: "14:00 – 15:10", frequency: "Hourly" },
+      { name: "15:00 – 16:00", frequency: "Hourly" },
+      { name: "16:00 – 17:00", frequency: "Hourly" },
+      { name: "17:00 – 18:00", frequency: "Hourly" },
+      { name: "18:00 – 19:00", frequency: "Hourly" },
+      { name: "19:00 – 20:00", frequency: "Hourly" },
+      { name: "20:00 – 21:00", frequency: "Hourly" },
+      { name: "21:00 – 22:00", frequency: "Hourly" },
+      { name: "22:00 – 23:00", frequency: "Hourly" },
+      { name: "23:00 – 00:00", frequency: "Hourly" },
+      { name: "00:00 – 01:00", frequency: "Hourly" },
+      { name: "01:00 – 02:00", frequency: "Hourly" },
+      { name: "02:00 – 03:00", frequency: "Hourly" },
+      { name: "03:00 – 04:00", frequency: "Hourly" },
+      { name: "04:00 – 05:00", frequency: "Hourly" },
+      { name: "05:00 – 06:00", frequency: "Hourly" },
+      { name: "06:00 – 07:00", frequency: "Hourly" }
+    ]
+  },
+  {
+    id: "M-35",
+    name: "W.C. Offices",
+    type: "area",
+    jobs: [
+      { name: "07:00 – 08:00", frequency: "Hourly" },
+      { name: "08:00 – 09:00", frequency: "Hourly" },
+      { name: "09:00 – 10:00", frequency: "Hourly" },
+      { name: "10:00 – 11:00", frequency: "Hourly" },
+      { name: "11:00 – 12:00", frequency: "Hourly" },
+      { name: "12:00 – 13:00", frequency: "Hourly" },
+      { name: "13:00 – 14:00", frequency: "Hourly" },
+      { name: "14:00 – 15:10", frequency: "Hourly" },
+      { name: "15:00 – 16:00", frequency: "Hourly" },
+      { name: "16:00 – 17:00", frequency: "Hourly" },
+      { name: "17:00 – 18:00", frequency: "Hourly" },
+      { name: "18:00 – 19:00", frequency: "Hourly" },
+      { name: "19:00 – 20:00", frequency: "Hourly" },
+      { name: "20:00 – 21:00", frequency: "Hourly" },
+      { name: "21:00 – 22:00", frequency: "Hourly" },
+      { name: "22:00 – 23:00", frequency: "Hourly" },
+      { name: "23:00 – 00:00", frequency: "Hourly" },
+      { name: "00:00 – 01:00", frequency: "Hourly" },
+      { name: "01:00 – 02:00", frequency: "Hourly" },
+      { name: "02:00 – 03:00", frequency: "Hourly" },
+      { name: "03:00 – 04:00", frequency: "Hourly" },
+      { name: "04:00 – 05:00", frequency: "Hourly" },
+      { name: "05:00 – 06:00", frequency: "Hourly" },
+      { name: "06:00 – 07:00", frequency: "Hourly" }
+    ]
+  }
+];
+
+function getShiftByTime(d){ d=d||new Date(); var m=d.getHours()*60+d.getMinutes();
+  if(m>=7*60 && m<15*60+30) return "S1";
+  if(m>=15*60+30 && m<24*60) return "S2";
+  return "S3"; }
+var SHIFTS=[
+  {id:"S1",label:"Shift 1",time:"7:00 — 15:30"},
+  {id:"S2",label:"Shift 2",time:"15:30 — 00:00"},
+  {id:"S3",label:"Shift 3",time:"00:00 — 7:00"}
+];
+var WEEKLY_AUDIT_ITEMS=[
+  {key:"checklist_completed",label:"Daily checklist completed",question:"Was the 5S checklist filled out for every shift this week?"},
+  {key:"issues_resolved",label:"Flagged issues resolved",question:"Were issues flagged in previous checks fixed or actioned?"},
+  {key:"standards_visible",label:"Standards & labels visible",question:"Are visual standards, labels, and signage in place and legible?"},
+  {key:"area_condition",label:"Overall area condition",question:"Is the machine/area in acceptable 5S condition right now?"},
+  {key:"safety_compliance",label:"Safety & PPE compliance",question:"Are safety equipment and PPE properly stored and accessible?"}
+];
+function getWeekLabel(d){ d=d||new Date(); var o=new Date(d.getFullYear(),0,1);
+  var w=Math.ceil((((d-o)/86400000)+o.getDay()+1)/7); return "Week "+w+", "+d.getFullYear(); }
+
+/* ============ STORAGE ============ */
+var SUB_KEY="masterpak_submissions", AUD_KEY="masterpak_audits", PIN_KEY="masterpak_pin", STATIONS_KEY="masterpak_stations";
+
+/* Pull latest submissions + audits from the sheet into the dashboard */
+function refreshFromSheet(){
+  if(!SHEET_URL) return;
+  fetchFromSheet("submission", function(subs){
+    if(subs){ state.submissions = subs; save(SUB_KEY, subs); if(state.view==="dashboard") render(); }
+  });
+  fetchFromSheet("audit", function(auds){
+    if(auds){ state.audits = auds; save(AUD_KEY, auds); if(state.view==="dashboard") render(); }
+  });
+}
+
+/* ===== Google Sheets sync ===== */
+var SHEET_URL = "https://script.google.com/macros/s/AKfycbzIxx2HK31LahZw3m5zjhxaMFxJZ9b0JwoXXcVxCesQUqGdaNcxGjIzc4pxDpzx7xiU7w/exec";
+
+/* Send one record to the sheet (fire-and-forget; no-cors so it always posts) */
+function syncToSheet(type, entry){
+  if(!SHEET_URL) return;
+  try{
+    var payload = Object.assign({ type:type }, entry);
+    fetch(SHEET_URL, {
+      method:"POST",
+      mode:"no-cors",
+      headers:{ "Content-Type":"text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    }).catch(function(){});
+  }catch(e){}
+}
+
+/* Read all records of a type from the sheet via JSONP (avoids CORS on reads) */
+var _jsonpId = 0;
+function fetchFromSheet(type, cb){
+  if(!SHEET_URL){ cb(null); return; }
+  var cbName = "__mp_cb_" + (_jsonpId++);
+  var done = false;
+  var script = document.createElement("script");
+  var timer = setTimeout(function(){ if(!done){ cleanup(); cb(null); } }, 10000);
+  function cleanup(){ done=true; clearTimeout(timer); try{ delete window[cbName]; }catch(e){ window[cbName]=undefined; } if(script.parentNode) script.parentNode.removeChild(script); }
+  window[cbName] = function(res){
+    cleanup();
+    if(!res || !res.ok){ cb(null); return; }
+    var rows = res.data || [];
+    var mapped = rows.map(function(r){
+      var base = { id:r.id, stationId:r.stationId, stationName:r.stationName,
+        answers:r.answers||{}, notes:r.notes||{}, timestamp:r.timestamp };
+      if(type==="audit"){ base.auditor=r.who; base.week=r.when; }
+      else { base.worker=r.who; base.shift=r.when; }
+      return base;
+    });
+    mapped.sort(function(a,b){ return new Date(b.timestamp)-new Date(a.timestamp); });
+    cb(mapped);
+  };
+  script.onerror = function(){ cleanup(); cb(null); };
+  script.src = SHEET_URL + "?action=read&type=" + encodeURIComponent(type) + "&callback=" + cbName;
+  document.body.appendChild(script);
+}
+function load(k){ try{ var v=localStorage.getItem(k); return v?JSON.parse(v):[]; }catch(e){ return []; } }
+function save(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+function getPin(){ try{ var v=localStorage.getItem(PIN_KEY); return v?JSON.parse(v):DEFAULT_PIN; }catch(e){ return DEFAULT_PIN; } }
+function setPin(p){ try{ localStorage.setItem(PIN_KEY, JSON.stringify(p)); }catch(e){} }
+function loadStations(){ try{ var v=localStorage.getItem(STATIONS_KEY); return v?JSON.parse(v):JSON.parse(JSON.stringify(DEFAULT_STATIONS)); }catch(e){ return JSON.parse(JSON.stringify(DEFAULT_STATIONS)); } }
+function saveStations(){ try{ localStorage.setItem(STATIONS_KEY, JSON.stringify(STATIONS)); }catch(e){} }
+var STATIONS = loadStations();
+
+/* ============ ICONS (inline SVG strings) ============ */
+var P = {
+  check:'<path d="M20 6 9 17l-5-5"/>',
+  x:'<path d="M18 6 6 18"/><path d="M6 6l12 12"/>',
+  chevR:'<path d="m9 18 6-6-6-6"/>',
+  arrowL:'<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
+  user:'<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.34-4.34"/>',
+  clip:'<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',
+  grid:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>',
+  clock:'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+  msg:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  gauge:'<path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/>',
+  factory:'<path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/>',
+  pin:'<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+  activity:'<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
+  list:'<path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/>',
+  alert:'<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+  checkC:'<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m22 4-10 10.01-3-3"/>',
+  qr:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/>',
+  lock:'<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
+  trash:'<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+  plus:'<path d="M12 5v14"/><path d="M5 12h14"/>',
+  edit:'<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/>'
+};
+function icon(name,size,color){ size=size||16; color=color||"currentColor";
+  return '<span class="icon"><svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="'+color+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(P[name]||'')+'</svg></span>'; }
+
+/* ============ APP STATE & ROUTER ============ */
+var state = { view:"home", station:null, submissions:[], audits:[], dashTab:"checklists", selectedOp:null, filterStation:"all", pinInput:"", pinError:false, cpCur:"", cpNew:"", cpConf:"", cpMsg:"", cpOk:false, edit:null, editIndex:-1, manageMsg:"" };
+
+function setView(v, extra){ state.view=v; if(extra) for(var k in extra) state[k]=extra[k]; render(); window.scrollTo(0,0); }
+
+function addSubmission(entry){ state.submissions.unshift(entry); save(SUB_KEY, state.submissions); syncToSheet("submission", entry); }
+function addAudit(entry){ state.audits.unshift(entry); save(AUD_KEY, state.audits); syncToSheet("audit", entry); }
+
+function esc(s){ return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+
+/* ============ RENDER ============ */
+var app = document.getElementById("app");
+function render(){
+  var html="";
+  if(state.view==="home") html=viewHome();
+  else if(state.view==="pinGate") html=viewPinGate();
+  else if(state.view==="checklist") html=viewChecklist();
+  else if(state.view==="managerHub") html=viewManagerHub();
+  else if(state.view==="changePin") html=viewChangePin();
+  else if(state.view==="manageList") html=viewManageList();
+  else if(state.view==="manageEdit") html=viewManageEdit();
+  else if(state.view==="dashboard") html=viewDashboard();
+  else if(state.view==="auditPicker") html=viewAuditPicker();
+  else if(state.view==="auditFlow") html=viewAuditFlow();
+  app.innerHTML='<div class="band"></div>'+html;
+  bindEvents();
+}
+
+/* ---------- shared bits ---------- */
+function topBar(title, subtitle, backAction, mono){
+  return '<div style="display:flex;align-items:center;gap:12px;padding:1.1rem 0 1.2rem">'
+    + '<button data-act="'+backAction+'" aria-label="Back" style="width:36px;height:36px;flex-shrink:0;border-radius:6px;border:1px solid '+T.line+';background:'+T.bgRaised+';display:flex;align-items:center;justify-content:center;color:'+T.text+'">'+icon("arrowL",16)+'</button>'
+    + '<div style="min-width:0"><div style="'+(mono?'font-family:monospace;':'')+'font-weight:600;font-size:15px;color:'+T.text+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(title)+'</div>'
+    + (subtitle?'<div class="mono" style="font-size:11px;color:'+T.textFaint+';letter-spacing:0.04em;margin-top:1px">'+esc(subtitle)+'</div>':'')+'</div></div>';
+}
+function sectionLabel(text, ic){
+  return '<div class="mono" style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:'+T.textFaint+';margin:1.4rem 0 0.6rem">'+(ic?icon(ic,12,T.textFaint):'')+text+'</div>';
+}
+function nameplate(s, act){
+  return '<button class="row-btn fade" data-act="'+act+'" data-id="'+s.id+'" style="position:relative">'
+    + '<span style="position:absolute;top:5px;left:5px;width:3px;height:3px;border-radius:50%;background:'+T.lineStrong+'"></span>'
+    + '<span style="position:absolute;top:5px;right:5px;width:3px;height:3px;border-radius:50%;background:'+T.lineStrong+'"></span>'
+    + '<span style="width:34px;height:34px;flex-shrink:0;border-radius:5px;background:'+T.bgRaised+';border:1px solid '+T.line+';display:flex;align-items:center;justify-content:center">'+icon(s.type==="machine"?"factory":"pin",15,T.accent)+'</span>'
+    + '<span style="flex:1;min-width:0"><span style="display:block;font-size:14px;font-weight:600;color:'+T.text+'">'+esc(s.name)+'</span>'
+    + '<span class="mono" style="display:block;font-size:11px;color:'+T.textFaint+';letter-spacing:0.03em;margin-top:1px">'+s.id+' · '+s.jobs.length+' checks</span></span>'
+    + icon("chevR",17,T.textFaint)+'</button>';
+}
+function primaryBtn(label, act, ic, disabled){
+  return '<button data-act="'+act+'" '+(disabled?'disabled':'')+' style="width:100%;display:flex;align-items:center;justify-content:center;gap:7px;padding:0.8rem;margin-top:1.4rem;border-radius:8px;background:'+(disabled?T.line:T.accent)+';color:'+(disabled?T.textFaint:'#fff')+';font-size:14px;font-weight:700;'+(disabled?'cursor:not-allowed':'')+'">'+esc(label)+(ic?icon(ic,16,disabled?T.textFaint:'#fff'):'')+'</button>';
+}
+function emptyNote(t){ return '<p style="text-align:center;color:'+T.textFaint+';font-size:13.5px;padding:2rem 0">'+esc(t)+'</p>'; }
+
+/* ---------- HOME ---------- */
+function viewHome(){
+  var q=(state.homeQuery||"").toLowerCase();
+  var f=STATIONS.filter(function(s){return s.name.toLowerCase().indexOf(q)>=0||s.id.toLowerCase().indexOf(q)>=0;});
+  var machines=f.filter(function(s){return s.type==="machine";});
+  var areas=f.filter(function(s){return s.type==="area";});
+  var h='<div class="shell">';
+  h+='<div style="text-align:center;padding:2.2rem 0 1.5rem">';
+  h+='<img src="'+LOGO_SRC+'" alt="Masterpak" style="height:38px;width:auto;margin:0 auto 1.1rem;display:block"/>';
+  h+='<h1>5S Operator Portal</h1>';
+  h+='<p style="color:'+T.textDim+';margin:0.5rem 0 0;font-size:13.5px">Scan the QR code on a machine or area to begin</p>';
+  h+='<p class="mono" style="color:'+T.textFaint+';margin:0.6rem 0 0;font-size:10.5px;letter-spacing:0.04em">DEMO MODE — SELECT A STATION BELOW TO SIMULATE A SCAN</p></div>';
+  h+='<button data-act="managerHub" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:0.85rem;margin-bottom:1.4rem;border-radius:8px;border:1px solid '+T.line+';background:'+T.bgRaised+';color:'+T.text+';font-size:13.5px;font-weight:600">'+icon("gauge",16,T.accent)+'Manager Area</button>';
+  h+='<div style="position:relative;margin:0 0 0.4rem"><span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:'+T.textFaint+'">'+icon("search",15,T.textFaint)+'</span>';
+  h+='<input id="homeSearch" value="'+esc(state.homeQuery||"")+'" placeholder="Search machine or area…" style="width:100%;padding:0.7rem 0.8rem 0.7rem 2.3rem;border-radius:8px;border:1px solid '+T.line+';background:'+T.bgCard+';color:'+T.text+';font-size:14px"/></div>';
+  if(machines.length){ h+=sectionLabel("Machines ("+machines.length+")","factory")+'<div style="display:grid;gap:8px">'; machines.forEach(function(s){h+=nameplate(s,"openChecklist");}); h+='</div>'; }
+  if(areas.length){ h+=sectionLabel("Areas ("+areas.length+")","pin")+'<div style="display:grid;gap:8px">'; areas.forEach(function(s){h+=nameplate(s,"openChecklist");}); h+='</div>'; }
+  if(!f.length) h+=emptyNote('No machine or area matches "'+(state.homeQuery||"")+'"');
+  h+='</div>';
+  return h;
+}
+
+/* ---------- CHECKLIST FLOW ---------- */
+var cl = { step:"name", worker:"", shift:null, answers:{}, notes:{} };
+function startChecklist(station){ cl={step:"name",worker:"",shift:getShiftByTime(),answers:{},notes:{}}; state.station=station; setView("checklist"); }
+
+function viewChecklist(){
+  var s=state.station;
+  var h='<div class="shell">'+topBar(s.name, s.id+" · "+s.jobs.length+" checklist items", "checklistBack", true);
+  if(cl.step!=="done") h+=progress(cl.step);
+  if(cl.step==="name") h+=stepName();
+  else if(cl.step==="shift") h+=stepShift();
+  else if(cl.step==="checklist") h+=stepChecklist();
+  else if(cl.step==="done") h+=stepDone();
+  h+='</div>';
+  return h;
+}
+function progress(step){
+  var steps=["name","shift","checklist"], idx=steps.indexOf(step);
+  var h='<div style="display:flex;gap:5px;margin-bottom:1.4rem">';
+  steps.forEach(function(s,i){ h+='<div style="flex:1;height:3px;border-radius:2px;background:'+(i<=idx?T.accent:T.line)+'"></div>'; });
+  return h+'</div>';
+}
+function stepHeader(ic,kicker,title,sub){
+  return '<div style="margin-bottom:1.2rem"><div style="display:flex;align-items:center;gap:7px;margin-bottom:8px">'+icon(ic,15,T.accent)
+    +'<span class="mono" style="font-size:10.5px;font-weight:600;letter-spacing:0.08em;color:'+T.textFaint+';text-transform:uppercase">'+kicker+'</span></div>'
+    +'<h2>'+esc(title)+'</h2>'+(sub?'<p style="margin:0.3rem 0 0;font-size:13px;color:'+T.textDim+'">'+esc(sub)+'</p>':'')+'</div>';
+}
+function stepName(){
+  return '<div class="fade">'+stepHeader("user","Step 1 of 3","Who's checking in?","Type your name to begin")
+    +'<div style="position:relative;margin:0.4rem 0"><span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:'+T.textFaint+'">'+icon("user",15,T.textFaint)+'</span>'
+    +'<input id="workerName" value="'+esc(cl.worker)+'" placeholder="Enter your full name…" style="width:100%;padding:0.7rem 0.8rem 0.7rem 2.3rem;border-radius:8px;border:1px solid '+T.line+';background:'+T.bgCard+';color:'+T.text+';font-size:14px"/></div>'
+    +primaryBtn("Continue","nameNext","chevR",!cl.worker.trim())+'</div>';
+}
+function stepShift(){
+  var detected=getShiftByTime();
+  var today=new Date().toLocaleDateString(undefined,{weekday:"long",year:"numeric",month:"long",day:"numeric"});
+  var h='<div class="fade">'+stepHeader("clock","Step 2 of 3","Confirm your shift","Detected automatically — change it if needed");
+  h+='<div style="display:flex;align-items:center;gap:8px;padding:0.7rem 0.9rem;margin-bottom:0.9rem;border-radius:7px;border:1px solid '+T.line+';background:rgba(31,58,95,0.07)">'+icon("clock",14,T.accent)
+    +'<div><div class="mono" style="font-size:9.5px;font-weight:600;letter-spacing:0.06em;color:'+T.textFaint+';text-transform:uppercase">Recording for</div>'
+    +'<div style="font-size:13px;font-weight:600;color:'+T.text+'">'+today+'</div></div></div>';
+  h+='<div style="display:grid;gap:8px">';
+  SHIFTS.forEach(function(s){
+    var active=cl.shift===s.id;
+    h+='<button data-act="pickShift" data-id="'+s.id+'" style="display:flex;align-items:center;justify-content:space-between;padding:0.85rem 1rem;border-radius:7px;border:'+(active?'1.5px solid '+T.accent:'1px solid '+T.line)+';background:'+(active?'rgba(31,58,95,0.07)':T.bgCard)+';text-align:left">'
+      +'<div><div style="font-size:14px;font-weight:600;color:'+(active?T.accent:T.text)+';display:flex;align-items:center;gap:8px">'+s.label
+      +(s.id===detected?'<span class="mono" style="font-size:9.5px;font-weight:600;color:'+T.textFaint+';border:1px solid '+T.line+';border-radius:4px;padding:1px 5px">NOW</span>':'')+'</div>'
+      +'<div class="mono" style="font-size:12px;color:'+(active?T.accent:T.textDim)+';margin-top:2px">'+s.time+'</div></div>'
+      +(active?icon("checkC",18,T.accent):'')+'</button>';
+  });
+  h+='</div>'+primaryBtn("Continue","shiftNext","chevR")+'</div>';
+  return h;
+}
+function stepChecklist(){
+  var s=state.station, jobs=s.jobs;
+  var done=jobs.filter(function(j){return cl.answers[j.name]!==undefined;}).length;
+  var all=done===jobs.length;
+  var h='<div class="fade">'+stepHeader("clip","Step 3 of 3","5S checklist",s.name+" — "+done+"/"+jobs.length+" completed");
+  h+='<div style="display:grid;gap:9px">';
+  jobs.forEach(function(job,i){
+    var val=cl.answers[job.name];
+    h+='<div style="padding:0.85rem 0.9rem;border-radius:8px;border:1px solid '+(val===false?'rgba(158,48,48,0.4)':T.line)+';background:'+T.bgCard+'">'
+      +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px">'
+      +'<span style="font-size:13.5px;font-weight:600;color:'+T.text+';line-height:1.3">'+esc(job.name)+'</span>'
+      +'<span class="mono" style="font-size:9.5px;font-weight:600;color:'+T.textFaint+';border:1px solid '+T.line+';border-radius:4px;padding:1px 6px;white-space:nowrap;flex-shrink:0">'+esc(job.frequency)+'</span></div>'
+      +'<div style="display:flex;gap:8px;margin-top:0.6rem">'
+      +ynBtn(val===true,"yes",i)+ynBtn(val===false,"no",i)+'</div>';
+    if(val===false){
+      h+='<div style="margin-top:9px;position:relative"><span style="position:absolute;left:11px;top:11px;color:'+T.textFaint+'">'+icon("msg",13,T.textFaint)+'</span>'
+        +'<input data-act="noteInput" data-job="'+i+'" value="'+esc(cl.notes[job.name]||"")+'" placeholder="What\'s the issue? (optional but helpful)" style="width:100%;padding:0.55rem 0.7rem 0.55rem 2.1rem;border-radius:6px;border:1px solid '+T.line+';background:'+T.bgRaised+';color:'+T.text+';font-size:12.5px"/></div>';
+    }
+    h+='</div>';
+  });
+  h+='</div>'+primaryBtn("Submit checklist","submitChecklist","check",!all);
+  if(!all) h+='<p style="text-align:center;font-size:11.5px;color:'+T.textFaint+';margin-top:8px">Answer all '+jobs.length+' items to submit</p>';
+  h+='</div>';
+  return h;
+}
+function ynBtn(active,variant,idx){
+  var isYes=variant==="yes", color=isYes?T.green:T.red, bg=isYes?T.greenBg:T.redBg;
+  return '<button data-act="answer" data-idx="'+idx+'" data-val="'+(isYes?"1":"0")+'" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:0.5rem 0;border-radius:6px;border:'+(active?'1.5px solid '+color:'1px solid '+T.line)+';background:'+(active?bg:T.bgRaised)+';color:'+(active?color:T.textDim)+';font-size:13px;font-weight:600">'+icon(isYes?"check":"x",14,active?color:T.textDim)+(isYes?"Done":"Issue")+'</button>';
+}
+function stepDone(){
+  var s=state.station;
+  return '<div class="fade" style="text-align:center;padding:2.8rem 0.5rem 1rem">'
+    +'<div style="width:60px;height:60px;margin:0 auto 1.1rem;border-radius:50%;background:'+T.greenBg+';border:1px solid rgba(46,107,79,0.4);display:flex;align-items:center;justify-content:center">'+icon("checkC",28,T.green)+'</div>'
+    +'<h2>Checklist submitted</h2>'
+    +'<p style="color:'+T.textDim+';font-size:13.5px;margin:0.45rem 0 0;line-height:1.5">Thanks for checking '+esc(s.name)+'.<br/>The manager dashboard has been updated.</p>'
+    +'<button data-act="goHome" style="margin-top:1.6rem;padding:0.7rem 1.4rem;border-radius:7px;border:1px solid '+T.line+';background:'+T.bgCard+';color:'+T.text+';font-size:13.5px;font-weight:600">Done</button></div>';
+}
+
+/* ---------- MANAGER PIN GATE ---------- */
+function viewPinGate(){
+  var dots="";
+  for(var i=0;i<4;i++){
+    var filled=i<state.pinInput.length;
+    dots+='<span style="width:14px;height:14px;border-radius:50%;border:2px solid '+(filled?T.accent:T.line)+';background:'+(filled?T.accent:"transparent")+'"></span>';
+  }
+  var keys=["1","2","3","4","5","6","7","8","9","clear","0","back"];
+  var pad="";
+  keys.forEach(function(k){
+    var label=k, sub="";
+    if(k==="clear"){ label='<span style="font-size:12px;font-weight:600">CLEAR</span>'; }
+    else if(k==="back"){ label=icon("arrowL",20,T.text); }
+    else { label='<span style="font-size:24px;font-weight:600;color:'+T.text+'">'+k+'</span>'; }
+    pad+='<button data-act="pinKey" data-key="'+k+'" style="height:62px;border-radius:10px;border:1px solid '+T.line+';background:'+T.bgCard+';display:flex;align-items:center;justify-content:center;cursor:pointer">'+label+'</button>';
+  });
+  return '<div class="shell">'+topBar("Manager Area","ENTER PIN TO CONTINUE","goHome")
+    +'<div style="text-align:center;padding:1.5rem 0 0.5rem">'
+    +'<span style="display:inline-flex;width:56px;height:56px;border-radius:50%;background:'+T.bgRaised+';border:1px solid '+T.line+';align-items:center;justify-content:center">'+icon("lock",26,T.accent)+'</span>'
+    +'<h2 style="margin:0.8rem 0 0.2rem;font-size:18px;font-weight:700;color:'+T.text+'">Manager Area is protected</h2>'
+    +'<p style="margin:0;font-size:13.5px;color:'+T.textDim+'">Enter the 4-digit PIN to continue.</p>'
+    +'</div>'
+    +'<div style="display:flex;gap:14px;justify-content:center;margin:1.3rem 0 0.4rem">'+dots+'</div>'
+    +(state.pinError?'<p style="text-align:center;color:'+T.red+';font-size:13px;font-weight:600;margin:0.4rem 0">Wrong PIN. Try again.</p>':'<p style="height:1.1rem;margin:0.4rem 0"></p>')
+    +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:300px;margin:0.6rem auto 0">'+pad+'</div>'
+    +'</div>';
+}
+
+/* ---------- MANAGER HUB ---------- */
+function viewManagerHub(){
+  function c(ic,title,desc,act){
+    return '<button data-act="'+act+'" class="row-btn" style="margin-bottom:10px;padding:1rem">'
+      +'<span style="width:38px;height:38px;flex-shrink:0;border-radius:6px;background:'+T.bgRaised+';border:1px solid '+T.line+';display:flex;align-items:center;justify-content:center">'+icon(ic,18,T.accent)+'</span>'
+      +'<span style="flex:1"><span style="display:block;font-size:14.5px;font-weight:600;color:'+T.text+'">'+title+'</span>'
+      +'<span style="display:block;font-size:12px;color:'+T.textDim+';margin-top:1px">'+desc+'</span></span>'+icon("chevR",17,T.textFaint)+'</button>';
+  }
+  return '<div class="shell">'
+    +'<div style="display:flex;align-items:center;gap:12px;padding:1.1rem 0 1.2rem">'
+    +'<button data-act="goHome" aria-label="Back" style="width:36px;height:36px;flex-shrink:0;border-radius:6px;border:1px solid '+T.line+';background:'+T.bgRaised+';display:flex;align-items:center;justify-content:center;color:'+T.text+'">'+icon("arrowL",16)+'</button>'
+    +'<div style="flex:1;min-width:0"><div style="font-weight:600;font-size:15px;color:'+T.text+'">Manager Area</div>'
+    +'<div class="mono" style="font-size:11px;color:'+T.textFaint+';letter-spacing:0.04em;margin-top:1px">MASTERPAK 5S</div></div>'
+    +'<button data-act="openChangePin" aria-label="Change PIN" title="Change PIN" style="width:36px;height:36px;flex-shrink:0;border-radius:6px;border:1px solid '+T.line+';background:'+T.bgRaised+';display:flex;align-items:center;justify-content:center;color:'+T.text+'">'+icon("gear",17,T.accent)+'</button>'
+    +'</div>'
+    +'<p style="color:'+T.textDim+';font-size:13.5px;margin:0 0 1.4rem">Review what operators have logged, or run your own weekly walk-through audit.</p>'
+    +c("gauge","Results dashboard","See submitted checklists and flagged issues","openDashboard")
+    +c("list","Weekly audit","Walk the floor and audit a machine or area","openAuditPicker")
+    +c("factory","Manage machines","Add, edit, or remove machines and their checklists","openManage")+'</div>';
+}
+
+/* ---------- CHANGE PIN ---------- */
+function viewChangePin(){
+  function field(label, key, val){
+    return '<div style="margin-bottom:0.9rem">'
+      +'<label style="display:block;font-size:12.5px;font-weight:600;color:'+T.textDim+';margin-bottom:5px">'+label+'</label>'
+      +'<input data-cp="'+key+'" type="tel" inputmode="numeric" maxlength="8" value="'+val+'" placeholder="••••" '
+      +'style="width:100%;padding:0.7rem 0.9rem;border-radius:8px;border:1px solid '+T.line+';background:'+T.bgCard+';color:'+T.text+';font-size:18px;letter-spacing:0.3em;font-family:monospace"/></div>';
+  }
+  var msg='';
+  if(state.cpMsg){
+    var col=state.cpOk?T.green:T.red, bg=state.cpOk?T.greenBg:T.redBg;
+    msg='<div style="margin:0.2rem 0 1rem;padding:0.7rem 0.9rem;border-radius:8px;background:'+bg+';color:'+col+';font-size:13px;font-weight:600">'+state.cpMsg+'</div>';
+  }
+  return '<div class="shell">'+topBar("Change PIN","MANAGER AREA","managerHub")
+    +'<div style="text-align:center;padding:0.5rem 0 1rem">'
+    +'<span style="display:inline-flex;width:50px;height:50px;border-radius:50%;background:'+T.bgRaised+';border:1px solid '+T.line+';align-items:center;justify-content:center">'+icon("lock",24,T.accent)+'</span>'
+    +'<p style="margin:0.7rem 0 0;font-size:13.5px;color:'+T.textDim+'">Set a new PIN for the Manager Area.</p></div>'
+    +msg
+    +field("Current PIN","cur",state.cpCur)
+    +field("New PIN (4 digits)","new",state.cpNew)
+    +field("Confirm new PIN","conf",state.cpConf)
+    +'<button data-act="savePin" style="width:100%;display:flex;align-items:center;justify-content:center;gap:7px;padding:0.8rem;margin-top:0.6rem;border-radius:8px;border:none;background:'+T.accent+';color:#fff;font-size:14px;font-weight:700">Save new PIN'+icon("check",16,"#fff")+'</button>'
+    +'</div>';
+}
+
+/* ---------- MANAGE MACHINES (list) ---------- */
+function viewManageList(){
+  var machines=STATIONS.filter(function(s){return s.type==="machine";});
+  var areas=STATIONS.filter(function(s){return s.type==="area";});
+  function rowItem(s){
+    var gi=STATIONS.indexOf(s);
+    return '<div style="display:flex;align-items:center;gap:10px;padding:0.7rem 0.85rem;border-radius:7px;border:1px solid '+T.line+';background:'+T.bgCard+';margin-bottom:7px">'
+      +'<span style="display:inline-flex;width:32px;height:32px;flex-shrink:0;border-radius:5px;background:'+T.bgRaised+';border:1px solid '+T.line+';align-items:center;justify-content:center">'+icon(s.type==="machine"?"factory":"mapPin",14,T.accent)+'</span>'
+      +'<div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:600;color:'+T.text+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(s.name)+'</div>'
+      +'<div class="mono" style="font-size:10.5px;color:'+T.textFaint+'">'+esc(s.id)+' · '+s.jobs.length+' checks</div></div>'
+      +'<button data-act="editMachine" data-idx="'+gi+'" aria-label="Edit" style="width:32px;height:32px;flex-shrink:0;border-radius:6px;border:1px solid '+T.line+';background:'+T.bgRaised+';display:flex;align-items:center;justify-content:center;cursor:pointer">'+icon("edit",15,T.accent)+'</button>'
+      +'<button data-act="deleteMachine" data-idx="'+gi+'" aria-label="Delete" style="width:32px;height:32px;flex-shrink:0;border-radius:6px;border:1px solid '+T.line+';background:'+T.redBg+';display:flex;align-items:center;justify-content:center;cursor:pointer">'+icon("trash",15,T.red)+'</button>'
+      +'</div>';
+  }
+  var msg = state.manageMsg ? '<div style="margin:0 0 1rem;padding:0.7rem 0.9rem;border-radius:8px;background:'+T.greenBg+';color:'+T.green+';font-size:13px;font-weight:600">'+esc(state.manageMsg)+'</div>' : '';
+  var h='<div class="shell">'+topBar("Manage Machines","ADD, EDIT OR REMOVE","managerHub");
+  h+=msg;
+  h+='<button data-act="addMachine" style="width:100%;display:flex;align-items:center;justify-content:center;gap:7px;padding:0.8rem;margin:0 0 1.1rem;border-radius:8px;border:none;background:'+T.accent+';color:#fff;font-size:14px;font-weight:700">'+icon("plus",16,"#fff")+'Add new machine or area</button>';
+  if(machines.length){ h+=sectionLabel("Machines ("+machines.length+")","factory"); machines.forEach(function(s){ h+=rowItem(s); }); }
+  if(areas.length){ h+=sectionLabel("Areas ("+areas.length+")","mapPin"); areas.forEach(function(s){ h+=rowItem(s); }); }
+  if(!STATIONS.length) h+=emptyNote("No machines yet. Add one above.");
+  h+='</div>';
+  return h;
+}
+
+/* ---------- MANAGE MACHINES (edit one) ---------- */
+function viewManageEdit(){
+  var e=state.edit;
+  var isNew = state.editIndex<0;
+  var jobsHtml="";
+  e.jobs.forEach(function(j,i){
+    jobsHtml+='<div style="display:flex;gap:7px;align-items:flex-start;margin-bottom:7px">'
+      +'<input data-ed="jobname" data-i="'+i+'" value="'+esc(j.name)+'" placeholder="Task name" style="flex:1;min-width:0;padding:0.55rem 0.7rem;border-radius:7px;border:1px solid '+T.line+';background:'+T.bgCard+';color:'+T.text+';font-size:13px"/>'
+      +'<input data-ed="jobfreq" data-i="'+i+'" value="'+esc(j.frequency||"")+'" placeholder="Frequency" style="width:115px;flex-shrink:0;padding:0.55rem 0.6rem;border-radius:7px;border:1px solid '+T.line+';background:'+T.bgCard+';color:'+T.text+';font-size:12px"/>'
+      +'<button data-act="removeJob" data-i="'+i+'" aria-label="Remove task" style="width:38px;height:38px;flex-shrink:0;border-radius:7px;border:1px solid '+T.line+';background:'+T.redBg+';display:flex;align-items:center;justify-content:center;cursor:pointer">'+icon("trash",14,T.red)+'</button>'
+      +'</div>';
+  });
+  var h='<div class="shell">'+topBar(isNew?"Add Machine":"Edit Machine","MANAGE MACHINES","openManage");
+  h+='<div style="margin-bottom:0.9rem"><label style="display:block;font-size:12.5px;font-weight:600;color:'+T.textDim+';margin-bottom:5px">Name</label>'
+    +'<input data-ed="name" value="'+esc(e.name)+'" placeholder="e.g. Extrusion line 9" style="width:100%;padding:0.7rem 0.9rem;border-radius:8px;border:1px solid '+T.line+';background:'+T.bgCard+';color:'+T.text+';font-size:15px"/></div>';
+  h+='<div style="display:flex;gap:10px;margin-bottom:0.9rem">'
+    +'<div style="flex:1"><label style="display:block;font-size:12.5px;font-weight:600;color:'+T.textDim+';margin-bottom:5px">Code / ID</label>'
+    +'<input data-ed="id" value="'+esc(e.id)+'" placeholder="e.g. M-36" style="width:100%;padding:0.7rem 0.9rem;border-radius:8px;border:1px solid '+T.line+';background:'+T.bgCard+';color:'+T.text+';font-size:15px"/></div>'
+    +'<div style="flex:1"><label style="display:block;font-size:12.5px;font-weight:600;color:'+T.textDim+';margin-bottom:5px">Type</label>'
+    +'<div style="display:flex;gap:6px">'
+    +'<button data-act="setType" data-t="machine" style="flex:1;padding:0.6rem 0;border-radius:7px;border:'+(e.type==="machine"?"1.5px solid "+T.accent:"1px solid "+T.line)+';background:'+(e.type==="machine"?"rgba(31,58,95,0.07)":T.bgCard)+';color:'+(e.type==="machine"?T.accent:T.textDim)+';font-size:12.5px;font-weight:600;cursor:pointer">Machine</button>'
+    +'<button data-act="setType" data-t="area" style="flex:1;padding:0.6rem 0;border-radius:7px;border:'+(e.type==="area"?"1.5px solid "+T.accent:"1px solid "+T.line)+';background:'+(e.type==="area"?"rgba(31,58,95,0.07)":T.bgCard)+';color:'+(e.type==="area"?T.accent:T.textDim)+';font-size:12.5px;font-weight:600;cursor:pointer">Area</button>'
+    +'</div></div></div>';
+  h+=sectionLabel("Checklist tasks ("+e.jobs.length+")","list");
+  h+=jobsHtml;
+  h+='<button data-act="addJob" style="width:100%;display:flex;align-items:center;justify-content:center;gap:6px;padding:0.65rem;margin:0.2rem 0 1rem;border-radius:7px;border:1px dashed '+T.lineStrong+';background:'+T.bgRaised+';color:'+T.accent+';font-size:13px;font-weight:600;cursor:pointer">'+icon("plus",15,T.accent)+'Add a task</button>';
+  if(state.manageMsg) h+='<div style="margin:0 0 0.8rem;padding:0.7rem 0.9rem;border-radius:8px;background:'+T.redBg+';color:'+T.red+';font-size:13px;font-weight:600">'+esc(state.manageMsg)+'</div>';
+  h+='<button data-act="saveMachine" style="width:100%;display:flex;align-items:center;justify-content:center;gap:7px;padding:0.8rem;border-radius:8px;border:none;background:'+T.accent+';color:#fff;font-size:14px;font-weight:700">'+icon("check",16,"#fff")+(isNew?"Add machine":"Save changes")+'</button>';
+  h+='</div>';
+  return h;
+}
+
+/* ---------- AUDIT PICKER ---------- */
+function viewAuditPicker(){
+  var q=(state.auditQuery||"").toLowerCase();
+  var f=STATIONS.filter(function(s){return s.name.toLowerCase().indexOf(q)>=0||s.id.toLowerCase().indexOf(q)>=0;});
+  var h='<div class="shell">'+topBar("Weekly Audit",getWeekLabel().toUpperCase(),"managerHub")
+    +'<p style="color:'+T.textDim+';font-size:13.5px;margin:0 0 1rem">Select the machine or area you\'re auditing this week.</p>'
+    +'<div style="position:relative;margin:0 0 0.4rem"><span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:'+T.textFaint+'">'+icon("search",15,T.textFaint)+'</span>'
+    +'<input id="auditSearch" value="'+esc(state.auditQuery||"")+'" placeholder="Search machine or area…" style="width:100%;padding:0.7rem 0.8rem 0.7rem 2.3rem;border-radius:8px;border:1px solid '+T.line+';background:'+T.bgCard+';color:'+T.text+';font-size:14px"/></div>'
+    +'<div style="display:grid;gap:8px;margin-top:0.6rem">';
+  f.forEach(function(s){h+=nameplate(s,"openAuditFlow");});
+  h+='</div>'; if(!f.length) h+=emptyNote('No machine or area matches "'+(state.auditQuery||"")+'"');
+  return h+'</div>';
+}
+
+/* ---------- AUDIT FLOW ---------- */
+var au = { step:"form", answers:{}, notes:{}, auditor:"" };
+function startAudit(station){ au={step:"form",answers:{},notes:{},auditor:""}; state.station=station; setView("auditFlow"); }
+function viewAuditFlow(){
+  var s=state.station;
+  if(au.step==="done"){
+    return '<div class="shell">'+topBar(s.name,"WEEKLY AUDIT","openAuditPicker",true)
+      +'<div class="fade" style="text-align:center;padding:2.8rem 0.5rem 1rem">'
+      +'<div style="width:60px;height:60px;margin:0 auto 1.1rem;border-radius:50%;background:'+T.greenBg+';border:1px solid rgba(46,107,79,0.4);display:flex;align-items:center;justify-content:center">'+icon("checkC",28,T.green)+'</div>'
+      +'<h2>Audit submitted</h2><p style="color:'+T.textDim+';font-size:13.5px;margin:0.45rem 0 0">Weekly audit for '+esc(s.name)+' recorded.</p>'
+      +'<button data-act="openAuditPicker" style="margin-top:1.6rem;padding:0.7rem 1.4rem;border-radius:7px;border:1px solid '+T.line+';background:'+T.bgCard+';color:'+T.text+';font-size:13.5px;font-weight:600">Done</button></div></div>';
+  }
+  var all=WEEKLY_AUDIT_ITEMS.every(function(i){return au.answers[i.key]!==undefined;});
+  var h='<div class="shell">'+topBar(s.name,s.id+" · "+getWeekLabel().toUpperCase(),"openAuditPicker",true)
+    +stepHeader("list","Weekly audit","Manager review","A higher-level check, separate from the daily operator checklist")
+    +'<div style="position:relative;margin:0 0 1rem"><span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);color:'+T.textFaint+'">'+icon("user",15,T.textFaint)+'</span>'
+    +'<input id="auditorName" value="'+esc(au.auditor)+'" placeholder="Your name (auditor)" style="width:100%;padding:0.7rem 0.8rem 0.7rem 2.3rem;border-radius:8px;border:1px solid '+T.line+';background:'+T.bgCard+';color:'+T.text+';font-size:14px"/></div>'
+    +'<div style="display:grid;gap:10px">';
+  WEEKLY_AUDIT_ITEMS.forEach(function(item,i){
+    var val=au.answers[item.key];
+    h+='<div style="padding:0.95rem 1rem;border-radius:8px;border:1px solid '+(val===false?'rgba(158,48,48,0.4)':T.line)+';background:'+T.bgCard+'">'
+      +'<div style="font-size:14px;font-weight:600;color:'+T.text+';margin-bottom:4px">'+esc(item.label)+'</div>'
+      +'<div style="font-size:12.5px;color:'+T.textDim+';margin-bottom:0.7rem;line-height:1.4">'+esc(item.question)+'</div>'
+      +'<div style="display:flex;gap:8px">'+ynBtnA(val===true,"yes",i)+ynBtnA(val===false,"no",i)+'</div>';
+    if(val===false){
+      h+='<div style="margin-top:9px;position:relative"><span style="position:absolute;left:11px;top:11px;color:'+T.textFaint+'">'+icon("msg",13,T.textFaint)+'</span>'
+        +'<input data-act="auditNote" data-idx="'+i+'" value="'+esc(au.notes[item.key]||"")+'" placeholder="What needs attention?" style="width:100%;padding:0.55rem 0.7rem 0.55rem 2.1rem;border-radius:6px;border:1px solid '+T.line+';background:'+T.bgRaised+';color:'+T.text+';font-size:12.5px"/></div>';
+    }
+    h+='</div>';
+  });
+  h+='</div>'+primaryBtn("Submit weekly audit","submitAudit","check",!all);
+  if(!all) h+='<p style="text-align:center;font-size:11.5px;color:'+T.textFaint+';margin-top:8px">Answer all '+WEEKLY_AUDIT_ITEMS.length+' items to submit</p>';
+  return h+'</div>';
+}
+function ynBtnA(active,variant,idx){
+  var isYes=variant==="yes", color=isYes?T.green:T.red, bg=isYes?T.greenBg:T.redBg;
+  return '<button data-act="auditAnswer" data-idx="'+idx+'" data-val="'+(isYes?"1":"0")+'" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:0.5rem 0;border-radius:6px;border:'+(active?'1.5px solid '+color:'1px solid '+T.line)+';background:'+(active?bg:T.bgRaised)+';color:'+(active?color:T.textDim)+';font-size:13px;font-weight:600">'+icon(isYes?"check":"x",14,active?color:T.textDim)+(isYes?"Done":"Issue")+'</button>';
+}
+
+/* ---------- DASHBOARD ---------- */
+function viewDashboard(){
+  var subs=state.submissions, auds=state.audits;
+  var byStation={}; STATIONS.forEach(function(s){byStation[s.id]={station:s,total:0,passed:0,failed:0};});
+  subs.forEach(function(sub){ var b=byStation[sub.stationId]; if(!b)return; b.total++;
+    var fc=Object.keys(sub.answers||{}).filter(function(k){return sub.answers[k]===false;}).length;
+    if(fc===0)b.passed++; else b.failed++; });
+  var stats=Object.keys(byStation).map(function(k){return byStation[k];});
+  var totalFailed=subs.reduce(function(a,s){return a+Object.keys(s.answers||{}).filter(function(k){return s.answers[k]===false;}).length;},0);
+  var flagged=stats.filter(function(s){return s.failed>0;}).length;
+
+  var h='<div class="shell-wide">'+topBar("Manager Dashboard","MASTERPAK 5S — AUDIT OVERVIEW","managerHub");
+  h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0.2rem 0 0.4rem">'
+    +statCard("clip","Submissions",subs.length,"neutral")
+    +statCard("alert","Stations flagged",flagged,"warning")
+    +statCard("activity","Failed items",totalFailed,"danger")+'</div>';
+  h+=sectionLabel("Status per machine / area","grid")+'<div style="display:grid;gap:6px;margin-bottom:0.6rem">';
+  stats.forEach(function(st){
+    var dot=st.total===0?T.textFaint:(st.failed>0?T.red:T.green);
+    h+='<button data-act="filterStation" data-id="'+st.station.id+'" style="display:flex;align-items:center;gap:11px;padding:0.7rem 0.9rem;border-radius:7px;border:'+(state.filterStation===st.station.id?'1.5px solid '+T.accent:'1px solid '+T.line)+';background:'+T.bgCard+';text-align:left">'
+      +'<span style="width:7px;height:7px;border-radius:50%;flex-shrink:0;background:'+dot+';'+(st.total>0?'box-shadow:0 0 0 3px '+dot+'22':'')+'"></span>'
+      +icon(st.station.type==="machine"?"factory":"pin",14,T.textFaint)
+      +'<span style="flex:1;min-width:0"><span style="display:block;font-size:13px;font-weight:600;color:'+T.text+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(st.station.name)+'</span>'
+      +'<span class="mono" style="display:block;font-size:10.5px;color:'+T.textFaint+'">'+st.station.id+' · '+st.station.jobs.length+' checks</span></span>'
+      +'<span class="mono" style="font-size:11px;color:'+T.textDim+';white-space:nowrap">'+(st.total===0?"NO DATA":st.passed+" OK · "+st.failed+" FLAG")+'</span></button>';
+  });
+  h+='</div>';
+  // tabs
+  h+='<div style="display:flex;gap:6px;margin:1.2rem 0 0.6rem">'
+    +tabBtn("checklists","Checklists ("+subs.length+")")
+    +tabBtn("operators","Operators")
+    +tabBtn("audits","Audits ("+auds.length+")")+'</div>';
+  var stationName=(function(){var f=STATIONS.filter(function(s){return s.id===state.filterStation;});return f.length?f[0].name:"";})();
+  var clearBtn=state.filterStation!=="all"?'<button data-act="clearFilter" class="mono" style="font-size:11.5px;color:'+T.accent+';margin-top:1.1rem">CLEAR FILTER</button>':'';
+
+  if(state.dashTab==="checklists"){
+    var fs=state.filterStation==="all"?subs:subs.filter(function(s){return s.stationId===state.filterStation;});
+    h+='<div style="display:flex;align-items:center;justify-content:space-between">'+sectionLabel(state.filterStation==="all"?"All submissions":"Submissions — "+stationName)+clearBtn+'</div>';
+    if(!fs.length) h+=emptyNote("No submissions yet");
+    h+='<div style="display:grid;gap:8px">'; fs.slice(0,50).forEach(function(sub){h+=subRow(sub);}); h+='</div>';
+  } else if(state.dashTab==="operators"){
+    if(state.selectedOp){
+      var theirs=subs.filter(function(s){return (s.worker||"(no name)")===state.selectedOp;});
+      h+='<div style="display:flex;align-items:center;justify-content:space-between">'+sectionLabel(state.selectedOp+" — "+theirs.length+" checklist"+(theirs.length===1?"":"s"),"user")
+        +'<button data-act="clearOp" class="mono" style="font-size:11.5px;color:'+T.accent+';margin-top:1.1rem">← ALL OPERATORS</button></div>';
+      h+='<div style="display:grid;gap:8px">'; theirs.forEach(function(sub){h+=fullSubRow(sub);}); h+='</div>';
+    } else {
+      h+=sectionLabel("Select an operator","user");
+      var byOp={}; subs.forEach(function(s){var nm=s.worker||"(no name)"; if(!byOp[nm])byOp[nm]={name:nm,count:0,flagged:0,last:0};
+        byOp[nm].count++; if(Object.keys(s.answers||{}).some(function(k){return s.answers[k]===false;}))byOp[nm].flagged++;
+        var t=new Date(s.timestamp).getTime(); if(t>byOp[nm].last)byOp[nm].last=t; });
+      var ops=Object.keys(byOp).map(function(k){return byOp[k];}).sort(function(a,b){return b.last-a.last;});
+      if(!ops.length) h+=emptyNote("No operators have submitted yet");
+      h+='<div style="display:grid;gap:6px">';
+      ops.forEach(function(op){
+        h+='<button data-act="selectOp" data-name="'+esc(op.name)+'" style="display:flex;align-items:center;gap:12px;padding:0.75rem 0.9rem;border-radius:7px;border:1px solid '+T.line+';background:'+T.bgCard+';text-align:left">'
+          +'<span style="width:34px;height:34px;flex-shrink:0;border-radius:50%;background:rgba(31,58,95,0.07);display:flex;align-items:center;justify-content:center">'+icon("user",16,T.accent)+'</span>'
+          +'<span style="flex:1;min-width:0"><span style="display:block;font-size:14px;font-weight:600;color:'+T.text+'">'+esc(op.name)+'</span>'
+          +'<span class="mono" style="display:block;font-size:11px;color:'+T.textFaint+';margin-top:1px">'+op.count+' checklist'+(op.count===1?"":"s")+' · last '+new Date(op.last).toLocaleDateString()+'</span></span>'
+          +(op.flagged>0?'<span class="mono" style="font-size:10.5px;font-weight:600;padding:3px 8px;border-radius:5px;background:'+T.redBg+';color:'+T.red+';white-space:nowrap">'+op.flagged+' flagged</span>':'')
+          +icon("chevR",16,T.textFaint)+'</button>';
+      });
+      h+='</div>';
+    }
+  } else {
+    var fa=state.filterStation==="all"?auds:auds.filter(function(a){return a.stationId===state.filterStation;});
+    h+='<div style="display:flex;align-items:center;justify-content:space-between">'+sectionLabel(state.filterStation==="all"?"All weekly audits":"Audits — "+stationName)+clearBtn+'</div>';
+    if(!fa.length) h+=emptyNote("No weekly audits logged yet");
+    h+='<div style="display:grid;gap:8px">'; fa.slice(0,50).forEach(function(a){h+=auditRow(a);}); h+='</div>';
+  }
+  return h+'</div>';
+}
+function tabBtn(id,label){
+  var active=state.dashTab===id;
+  return '<button data-act="dashTab" data-tab="'+id+'" style="flex:1;padding:0.55rem 0.4rem;border-radius:7px;border:'+(active?'1.5px solid '+T.accent:'1px solid '+T.line)+';background:'+(active?'rgba(31,58,95,0.07)':T.bgCard)+';color:'+(active?T.accent:T.textDim)+';font-size:12.5px;font-weight:600">'+label+'</button>';
+}
+function statCard(ic,label,value,tone){
+  var color=tone==="danger"?T.red:(tone==="warning"?T.accent:T.textDim);
+  return '<div style="padding:0.85rem 0.8rem;border-radius:8px;background:'+T.bgCard+';border:1px solid '+T.line+'">'+icon(ic,15,color)
+    +'<div style="font-family:Archivo,sans-serif;font-size:24px;font-weight:700;color:'+T.text+';margin-top:8px;line-height:1">'+value+'</div>'
+    +'<div class="mono" style="font-size:10px;color:'+T.textFaint+';margin-top:4px;letter-spacing:0.02em;text-transform:uppercase">'+label+'</div></div>';
+}
+function subRow(sub){
+  var failed=Object.keys(sub.answers||{}).filter(function(k){return sub.answers[k]===false;});
+  var allOk=failed.length===0;
+  var sl=(function(){var f=SHIFTS.filter(function(s){return s.id===sub.shift;});return f.length?f[0].label:sub.shift;})();
+  var h='<div style="padding:0.8rem 0.9rem;border-radius:8px;border:1px solid '+T.line+';background:'+T.bgCard+'">'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">'
+    +'<div><div style="font-size:13.5px;font-weight:600;color:'+T.text+'">'+esc(sub.stationName)+'</div>'
+    +'<div class="mono" style="font-size:11px;color:'+T.textFaint+';margin-top:2px">'+esc(sub.worker)+' · '+sl+' · '+new Date(sub.timestamp).toLocaleString()+'</div></div>'
+    +'<span class="mono" style="font-size:10.5px;font-weight:600;padding:3px 8px;border-radius:5px;background:'+(allOk?T.greenBg:T.redBg)+';color:'+(allOk?T.green:T.red)+';white-space:nowrap;flex-shrink:0">'+(allOk?"ALL OK":failed.length+" FLAGGED")+'</span></div>';
+  if(!allOk){ h+='<div style="margin-top:9px;padding-top:9px;border-top:1px solid '+T.line+'">';
+    failed.forEach(function(n){ h+='<div style="font-size:12px;color:'+T.textDim+';margin-bottom:3px"><span style="color:'+T.red+';font-weight:600">'+esc(n)+':</span> '+esc((sub.notes||{})[n]||"No comment provided")+'</div>'; });
+    h+='</div>'; }
+  return h+'</div>';
+}
+function fullSubRow(sub){
+  var jobs=Object.keys(sub.answers||{});
+  var failed=jobs.filter(function(k){return sub.answers[k]===false;}).length;
+  var allOk=failed===0;
+  var sl=(function(){var f=SHIFTS.filter(function(s){return s.id===sub.shift;});return f.length?f[0].label:sub.shift;})();
+  var h='<div style="padding:0.8rem 0.9rem;border-radius:8px;border:1px solid '+T.line+';background:'+T.bgCard+'">'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">'
+    +'<div><div style="font-size:13.5px;font-weight:600;color:'+T.text+'">'+esc(sub.stationName)+'</div>'
+    +'<div class="mono" style="font-size:11px;color:'+T.textFaint+';margin-top:2px">'+sl+' · '+new Date(sub.timestamp).toLocaleString()+'</div></div>'
+    +'<span class="mono" style="font-size:10.5px;font-weight:600;padding:3px 8px;border-radius:5px;background:'+(allOk?T.greenBg:T.redBg)+';color:'+(allOk?T.green:T.red)+';white-space:nowrap;flex-shrink:0">'+(allOk?"ALL OK":failed+" FLAGGED")+'</span></div>'
+    +'<div style="margin-top:9px;padding-top:9px;border-top:1px solid '+T.line+'">';
+  jobs.forEach(function(n){ var val=sub.answers[n]; var note=val===false?(sub.notes||{})[n]:null;
+    h+='<div style="display:flex;align-items:flex-start;gap:7px;font-size:12px;margin-bottom:3px">'
+      +'<span style="color:'+(val?T.green:T.red)+';flex-shrink:0;margin-top:1px">'+icon(val?"check":"x",13,val?T.green:T.red)+'</span>'
+      +'<span style="color:'+T.textDim+'">'+esc(n)+(note?' — '+esc(note):'')+'</span></div>'; });
+  return h+'</div></div>';
+}
+function auditRow(a){
+  var failed=WEEKLY_AUDIT_ITEMS.filter(function(i){return a.answers[i.key]===false;});
+  var allOk=failed.length===0;
+  var h='<div style="padding:0.8rem 0.9rem;border-radius:8px;border:1px solid '+T.line+';background:'+T.bgCard+'">'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">'
+    +'<div><div style="font-size:13.5px;font-weight:600;color:'+T.text+'">'+esc(a.stationName)+'</div>'
+    +'<div class="mono" style="font-size:11px;color:'+T.textFaint+';margin-top:2px">'+esc(a.auditor)+' · '+esc(a.week)+' · '+new Date(a.timestamp).toLocaleString()+'</div></div>'
+    +'<span class="mono" style="font-size:10.5px;font-weight:600;padding:3px 8px;border-radius:5px;background:'+(allOk?T.greenBg:T.redBg)+';color:'+(allOk?T.green:T.red)+';white-space:nowrap;flex-shrink:0">'+(allOk?"ALL OK":failed.length+" FLAGGED")+'</span></div>';
+  if(!allOk){ h+='<div style="margin-top:9px;padding-top:9px;border-top:1px solid '+T.line+'">';
+    failed.forEach(function(item){ h+='<div style="font-size:12px;color:'+T.textDim+';margin-bottom:3px"><span style="color:'+T.red+';font-weight:600">'+esc(item.label)+':</span> '+esc((a.notes||{})[item.key]||"No comment provided")+'</div>'; });
+    h+='</div>'; }
+  return h+'</div>';
+}
+
+/* ============ EVENT BINDING ============ */
+function bindEvents(){
+  // search inputs (preserve focus)
+  var hs=document.getElementById("homeSearch");
+  if(hs) hs.addEventListener("input",function(){ state.homeQuery=this.value; var p=this.selectionStart; render(); var n=document.getElementById("homeSearch"); if(n){n.focus();n.setSelectionRange(p,p);} });
+  var as=document.getElementById("auditSearch");
+  if(as) as.addEventListener("input",function(){ state.auditQuery=this.value; var p=this.selectionStart; render(); var n=document.getElementById("auditSearch"); if(n){n.focus();n.setSelectionRange(p,p);} });
+  var wn=document.getElementById("workerName");
+  if(wn){ wn.addEventListener("input",function(){ cl.worker=this.value; var btn=document.querySelector('[data-act="nameNext"]'); if(btn){ if(cl.worker.trim()){btn.disabled=false;btn.style.background=T.accent;btn.style.color="#fff";}else{btn.disabled=true;btn.style.background=T.line;btn.style.color=T.textFaint;} } });
+    wn.addEventListener("keydown",function(ev){ if(ev.key==="Enter"&&cl.worker.trim()){ cl.step="shift"; render(); } }); }
+  var an=document.getElementById("auditorName");
+  if(an) an.addEventListener("input",function(){ au.auditor=this.value; });
+
+  // change-PIN fields
+  app.querySelectorAll('input[data-cp]').forEach(function(inp){
+    inp.addEventListener("input",function(){
+      var k=inp.getAttribute("data-cp");
+      var v=inp.value.replace(/[^0-9]/g,"");
+      if(k==="cur") state.cpCur=v; else if(k==="new") state.cpNew=v; else if(k==="conf") state.cpConf=v;
+      inp.value=v;
+    });
+  });
+
+  // machine-editor fields (no re-render on input, to keep focus)
+  app.querySelectorAll('input[data-ed]').forEach(function(inp){
+    inp.addEventListener("input",function(){
+      var k=inp.getAttribute("data-ed");
+      if(k==="name") state.edit.name=inp.value;
+      else if(k==="id") state.edit.id=inp.value;
+      else if(k==="jobname"){ var i=+inp.getAttribute("data-i"); state.edit.jobs[i].name=inp.value; }
+      else if(k==="jobfreq"){ var j=+inp.getAttribute("data-i"); state.edit.jobs[j].frequency=inp.value; }
+    });
+  });
+
+  var els=app.querySelectorAll("[data-act]");
+  els.forEach(function(el){
+    if(el.tagName==="INPUT") return; // handled below
+    el.addEventListener("click",function(){ handleAct(el.getAttribute("data-act"), el); });
+  });
+  // note inputs
+  app.querySelectorAll('input[data-act="noteInput"]').forEach(function(inp){
+    inp.addEventListener("input",function(){ var i=+inp.getAttribute("data-job"); cl.notes[state.station.jobs[i].name]=inp.value; });
+  });
+  app.querySelectorAll('input[data-act="auditNote"]').forEach(function(inp){
+    inp.addEventListener("input",function(){ var i=+inp.getAttribute("data-idx"); au.notes[WEEKLY_AUDIT_ITEMS[i].key]=inp.value; });
+  });
+}
+function handleAct(act, el){
+  switch(act){
+    case "managerHub": state.pinInput=""; state.pinError=false; setView("pinGate"); break;
+    case "openChangePin": state.cpCur=""; state.cpNew=""; state.cpConf=""; state.cpMsg=""; state.cpOk=false; setView("changePin"); break;
+    case "savePin": {
+      var cur=state.cpCur.trim(), nw=state.cpNew.trim(), cf=state.cpConf.trim();
+      if(cur!==getPin()){ state.cpMsg="Current PIN is wrong."; state.cpOk=false; render(); break; }
+      if(!/^[0-9]{4}$/.test(nw)){ state.cpMsg="New PIN must be 4 digits."; state.cpOk=false; render(); break; }
+      if(nw!==cf){ state.cpMsg="New PINs do not match."; state.cpOk=false; render(); break; }
+      setPin(nw); state.cpMsg="PIN changed successfully."; state.cpOk=true; state.cpCur=""; state.cpNew=""; state.cpConf=""; render(); break;
+    }
+    case "openManage": state.manageMsg=""; setView("manageList"); break;
+    case "addMachine": {
+      // suggest next id
+      var n=STATIONS.length+1; var nid="M-"+(n<10?"0"+n:n);
+      state.edit={ id:nid, name:"", type:"machine", jobs:[{name:"",frequency:"Daily"}] };
+      state.editIndex=-1; state.manageMsg=""; setView("manageEdit"); break;
+    }
+    case "editMachine": {
+      var ix=+el.getAttribute("data-idx");
+      state.edit=JSON.parse(JSON.stringify(STATIONS[ix]));
+      if(!state.edit.jobs.length) state.edit.jobs=[{name:"",frequency:""}];
+      state.editIndex=ix; state.manageMsg=""; setView("manageEdit"); break;
+    }
+    case "deleteMachine": {
+      var di=+el.getAttribute("data-idx");
+      var nm=STATIONS[di].name;
+      if(confirm('Delete "'+nm+'"? This cannot be undone.')){
+        STATIONS.splice(di,1); saveStations(); state.manageMsg='Deleted "'+nm+'".'; render();
+      }
+      break;
+    }
+    case "setType": state.edit.type=el.getAttribute("data-t"); render(); break;
+    case "addJob": state.edit.jobs.push({name:"",frequency:""}); render(); break;
+    case "removeJob": { var ji=+el.getAttribute("data-i"); state.edit.jobs.splice(ji,1); render(); break; }
+    case "saveMachine": {
+      var e=state.edit;
+      e.name=(e.name||"").trim(); e.id=(e.id||"").trim();
+      if(!e.name){ state.manageMsg="Please enter a name."; render(); break; }
+      if(!e.id){ state.manageMsg="Please enter a code / ID."; render(); break; }
+      // id unique check (allow same id when editing the same item)
+      var clash=STATIONS.some(function(s,idx){ return s.id===e.id && idx!==state.editIndex; });
+      if(clash){ state.manageMsg="That code / ID is already used. Choose another."; render(); break; }
+      // clean jobs: drop empty names
+      e.jobs=e.jobs.map(function(j){ return {name:(j.name||"").trim(), frequency:(j.frequency||"").trim()||"As needed"}; }).filter(function(j){ return j.name; });
+      if(!e.jobs.length){ state.manageMsg="Add at least one checklist task."; render(); break; }
+      if(state.editIndex<0){ STATIONS.push(e); state.manageMsg='Added "'+e.name+'".'; }
+      else { STATIONS[state.editIndex]=e; state.manageMsg='Saved "'+e.name+'".'; }
+      saveStations(); setView("manageList"); break;
+    }
+    case "pinKey": {
+      var k=el.getAttribute("data-key");
+      if(k==="clear"){ state.pinInput=""; state.pinError=false; }
+      else if(k==="back"){ state.pinInput=state.pinInput.slice(0,-1); state.pinError=false; }
+      else if(state.pinInput.length<4){ state.pinInput+=k; state.pinError=false; }
+      if(state.pinInput.length===4){
+        if(state.pinInput===getPin()){ state.pinInput=""; state.pinError=false; setView("managerHub"); break; }
+        else { state.pinError=true; state.pinInput=""; }
+      }
+      render(); break;
+    }
+    case "goHome": setView("home"); break;
+    case "openChecklist": startChecklist(STATIONS.filter(function(s){return s.id===el.getAttribute("data-id");})[0]); break;
+    case "checklistBack": if(cl.step==="name")setView("home"); else if(cl.step==="shift"){cl.step="name";render();} else if(cl.step==="checklist"){cl.step="shift";render();} break;
+    case "nameNext": if(cl.worker.trim()){cl.step="shift";render();} break;
+    case "pickShift": cl.shift=el.getAttribute("data-id"); render(); break;
+    case "shiftNext": cl.step="checklist"; render(); break;
+    case "answer": { var i=+el.getAttribute("data-idx"); var v=el.getAttribute("data-val")==="1"; cl.answers[state.station.jobs[i].name]=v; render(); break; }
+    case "submitChecklist": {
+      var s=state.station; var all=s.jobs.every(function(j){return cl.answers[j.name]!==undefined;});
+      if(!all) break;
+      addSubmission({id:Date.now()+"-"+Math.random().toString(36).slice(2,8),stationId:s.id,stationName:s.name,stationType:s.type,worker:cl.worker,shift:cl.shift,answers:cl.answers,notes:cl.notes,timestamp:new Date().toISOString()});
+      cl.step="done"; render(); break; }
+    case "openDashboard": state.filterStation="all"; state.dashTab="checklists"; state.selectedOp=null; setView("dashboard"); refreshFromSheet(); break;
+    case "openAuditPicker": setView("auditPicker"); break;
+    case "openAuditFlow": startAudit(STATIONS.filter(function(s){return s.id===el.getAttribute("data-id");})[0]); break;
+    case "auditAnswer": { var i2=+el.getAttribute("data-idx"); var v2=el.getAttribute("data-val")==="1"; au.answers[WEEKLY_AUDIT_ITEMS[i2].key]=v2; render(); break; }
+    case "submitAudit": {
+      var all2=WEEKLY_AUDIT_ITEMS.every(function(it){return au.answers[it.key]!==undefined;}); if(!all2) break;
+      var st=state.station;
+      addAudit({id:Date.now()+"-"+Math.random().toString(36).slice(2,8),stationId:st.id,stationName:st.name,stationType:st.type,auditor:au.auditor.trim()||"Manager",week:getWeekLabel(),answers:au.answers,notes:au.notes,timestamp:new Date().toISOString()});
+      au.step="done"; render(); break; }
+    case "dashTab": state.dashTab=el.getAttribute("data-tab"); state.selectedOp=null; render(); break;
+    case "filterStation": state.filterStation=el.getAttribute("data-id"); render(); break;
+    case "clearFilter": state.filterStation="all"; render(); break;
+    case "selectOp": state.selectedOp=el.getAttribute("data-name"); render(); break;
+    case "clearOp": state.selectedOp=null; render(); break;
+  }
+}
+
+
+/* ============ INIT ============ */
+state.submissions = load(SUB_KEY);
+state.audits = load(AUD_KEY);
+render();
+setInterval(function(){ if(state.view==="checklist" && cl.step==="shift") render(); }, 60000);
+</script>
+</body>
+</html>
     font-family: 'Inter','Segoe UI','Helvetica Neue',Arial,sans-serif;
     color: #23282E; -webkit-font-smoothing: antialiased;
   }
